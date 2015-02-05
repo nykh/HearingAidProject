@@ -1,0 +1,55 @@
+##################################
+## Code Composer Studio specific
+##################################
+
+# I only want the .out or .bin file
+*.obj
+*.prefs
+*.pp
+*.mk
+*.map
+*.xml
+*.opt
+.ccsproject
+
+#################
+## Eclipse
+#################
+
+*.pydevproject
+.project
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.classpath
+.settings/
+.loadpath
+
+# External tool builders
+.externalToolBuilders/
+
+# Locally stored "Eclipse launch configurations"
+*.launch
+
+# CDT-specific
+.cproject
+
+# PDT-specific
+.buildpath
+
+##########################
+#  Ignore example folders
+##########################
+dvt/
+RemoteSystemsTempFiles/
+
+examples/
+blinky/
+qs-rgb/
+uart_echo/
+
