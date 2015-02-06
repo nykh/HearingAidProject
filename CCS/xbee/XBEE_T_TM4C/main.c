@@ -26,16 +26,15 @@ int main(void) {
 	Time_Init();
 	Debug_Init();
 	UART_Init();
-	XBEE_Init(0x69);	
+	XBEE_Init(0x69);
 	for(;;){
-
 		UART_OutString("Instring: ");
 		UART_InString(buf, BUFFER_SIZE);
 		UART_NewLine(); 
 		
 		XBee_CreateTxFrame(buf);
-// 		do{                       // resend a frame if 
+		// 		do{                       // resend a frame if
 			XBee_SendTxFrame();
-// 		}while(!XBee_TxStatus);
+		// 		}while(!XBee_TxStatus);
 	}
 }
