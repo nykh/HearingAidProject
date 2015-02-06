@@ -6,23 +6,9 @@
 #include <stdbool.h>
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
-#include "driverlib/debug.h"
-#include "driverlib/fpu.h"
-#include "driverlib/gpio.h"
-#include "driverlib/interrupt.h"
-#include "driverlib/pin_map.h"
-#include "driverlib/rom.h"
-#include "driverlib/sysctl.h"
-#include "driverlib/uart.h"
-/*
-#include <stdint.h>
-#include <stdbool.h>
-#include "inc/hw_ints.h"
-#include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include "driverlib/sysctl.h"
 
-*/
 #include "Time.h"
 #include "XBEE.h"
 
@@ -40,10 +26,7 @@ int main(void) {
 	for(;;){
 		XBEE_ReceiveRxFrame(buf);
 		
-		//if(1){
-		// if(0 == result){  // success
-      printf("%s\r\n", buf);
-    //}
+		printf("%s\r\n", buf);
     
     //XBEE_SendAcknoledgeFrame(result);
 	}
