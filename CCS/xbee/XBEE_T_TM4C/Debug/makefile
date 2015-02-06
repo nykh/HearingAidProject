@@ -8,10 +8,6 @@ CG_TOOL_ROOT := c:/ti/ccsv6/tools/compiler/arm_5.1.10
 
 ORDERED_OBJS += \
 $(GEN_CMDS__FLAG) \
-"./FIFO.obj" \
-"./Time.obj" \
-"./XBEE.obj" \
-"./debug.obj" \
 "./main.obj" \
 "./tm4c123gh6pm_startup_ccsValvano.obj" \
 "../tm4c123gh6pm.cmd" \
@@ -114,40 +110,40 @@ endif
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXE_OUTPUTS += \
-XBEE_R_TM4C.out \
+XBEE_T_TM4C.out \
 
 EXE_OUTPUTS__QUOTED += \
-"XBEE_R_TM4C.out" \
+"XBEE_T_TM4C.out" \
 
 BIN_OUTPUTS += \
-XBEE_R_TM4C.hex \
+XBEE_T_TM4C.hex \
 
 BIN_OUTPUTS__QUOTED += \
-"XBEE_R_TM4C.hex" \
+"XBEE_T_TM4C.hex" \
 
 
 # All Target
-all: XBEE_R_TM4C.out
+all: XBEE_T_TM4C.out
 
 # Tool invocations
-XBEE_R_TM4C.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
+XBEE_T_TM4C.out: $(OBJS) $(CMD_SRCS) $(GEN_CMDS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: ARM Linker'
-	"c:/ti/ccsv6/tools/compiler/arm_5.1.10/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 --abi=eabi -me -g --gcc --define=ccs="ccs" --define=PART_TM4C123GH6PM --display_error_number --diag_warning=225 --diag_wrap=off -z -m"XBEE_R_TM4C.map" --heap_size=0 --stack_size=512 -i"c:/ti/ccsv6/tools/compiler/arm_5.1.10/lib" -i"C:/ti/TivaWare_C_Series-1.1/driverlib/ccs/Debug/" -i"c:/ti/ccsv6/tools/compiler/arm_5.1.10/include" --reread_libs --warn_sections --display_error_number --diag_wrap=off --xml_link_info="XBEE_R_TM4C_linkInfo.xml" --rom_model -o "XBEE_R_TM4C.out" $(ORDERED_OBJS)
+	"c:/ti/ccsv6/tools/compiler/arm_5.1.10/bin/armcl" -mv7M4 --code_state=16 --float_support=FPv4SPD16 --abi=eabi -me -g --gcc --define=ccs="ccs" --define=PART_TM4C123GH6PM --display_error_number --diag_warning=225 --diag_wrap=off -z -m"XBEE_T_TM4C.map" --heap_size=0 --stack_size=512 -i"c:/ti/ccsv6/tools/compiler/arm_5.1.10/lib" -i"C:/ti/TivaWare_C_Series-1.1/driverlib/ccs/Debug" -i"c:/ti/ccsv6/tools/compiler/arm_5.1.10/include" --reread_libs --warn_sections --display_error_number --diag_wrap=off --xml_link_info="XBEE_T_TM4C_linkInfo.xml" --rom_model -o "XBEE_T_TM4C.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
-XBEE_R_TM4C.hex: $(EXE_OUTPUTS)
+XBEE_T_TM4C.hex: $(EXE_OUTPUTS)
 	@echo 'Invoking: ARM Hex Utility'
-	"c:/ti/ccsv6/tools/compiler/arm_5.1.10/bin/armhex"  -o "XBEE_R_TM4C.hex" $(EXE_OUTPUTS__QUOTED)
+	"c:/ti/ccsv6/tools/compiler/arm_5.1.10/bin/armhex"  -o "XBEE_T_TM4C.hex" $(EXE_OUTPUTS__QUOTED)
 	@echo 'Finished building: $@'
 	@echo ' '
 
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)$(BIN_OUTPUTS__QUOTED)
-	-$(RM) "FIFO.pp" "Time.pp" "XBEE.pp" "debug.pp" "main.pp" "tm4c123gh6pm_startup_ccsValvano.pp" 
-	-$(RM) "FIFO.obj" "Time.obj" "XBEE.obj" "debug.obj" "main.obj" "tm4c123gh6pm_startup_ccsValvano.obj" 
+	-$(RM) "main.pp" "tm4c123gh6pm_startup_ccsValvano.pp" 
+	-$(RM) "main.obj" "tm4c123gh6pm_startup_ccsValvano.obj" 
 	-@echo 'Finished clean'
 	-@echo ' '
 
