@@ -32,10 +32,12 @@
 // U0Rx (VCP receive) connected to PA0
 // U0Tx (VCP transmit) connected to PA1
 
-#include <stdint.h>
-#include "inc/lm3s1968.h"
-#include "FIFO.h"
 #include "UART.h"
+
+#include <stdint.h>
+#include "inc/tm4c123gh6pm.h"
+#include "FIFO.h"
+
 
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
@@ -120,24 +122,24 @@ void UART_NewLine(void){
 // hardware RX FIFO goes from 1 to 2 or more items
 // UART receiver has timed out
 void UART0_Handler(void){
-  if(UART0_RIS_R&UART_RIS_TXRIS){       // hardware TX FIFO <= 2 items
-    UART0_ICR_R = UART_ICR_TXIC;        // acknowledge TX FIFO
-    // copy from software TX FIFO to hardware TX FIFO
-    copySoftwareToHardware();
-    if(UART0TxFifo_Size() == 0){        // software TX FIFO is empty
-      UART0_IM_R &= ~UART_IM_TXIM;      // disable TX FIFO interrupt
-    }
-  }
-  if(UART0_RIS_R&UART_RIS_RXRIS){       // hardware RX FIFO >= 2 items
-    UART0_ICR_R = UART_ICR_RXIC;        // acknowledge RX FIFO
-    // copy from hardware RX FIFO to software RX FIFO
-    copyHardwareToSoftware();
-  }
-  if(UART0_RIS_R&UART_RIS_RTRIS){       // receiver timed out
-    UART0_ICR_R = UART_ICR_RTIC;        // acknowledge receiver time out
-    // copy from hardware RX FIFO to software RX FIFO
-    copyHardwareToSoftware();
-  }
+	if(UART0_RIS_R&UART_RIS_TXRIS){       // hardware TX FIFO <= 2 items
+		UART0_ICR_R = UART_ICR_TXIC;        // acknowledge TX FIFO
+		// copy from software TX FIFO to hardware TX FIFO
+		copySoftwareToHardware();
+		if(UART0TxFifo_Size() == 0){        // software TX FIFO is empty
+			UART0_IM_R &= ~UART_IM_TXIM;      // disable TX FIFO interrupt
+		}
+	}
+	if(UART0_RIS_R&UART_RIS_RXRIS){       // hardware RX FIFO >= 2 items
+		UART0_ICR_R = UART_ICR_RXIC;        // acknowledge RX FIFO
+		// copy from hardware RX FIFO to software RX FIFO
+		copyHardwareToSoftware();
+	}
+	if(UART0_RIS_R&UART_RIS_RTRIS){       // receiver timed out
+		UART0_ICR_R = UART_ICR_RTIC;        // acknowledge receiver time out
+		// copy from hardware RX FIFO to software RX FIFO
+		copyHardwareToSoftware();
+	}
 }
 
 
@@ -146,10 +148,10 @@ void UART0_Handler(void){
 // Input: pointer to a NULL-terminated string to be transferred
 // Output: none
 void UART_OutString(char *pt){
-  while(*pt){
-    UART_OutChar(*pt);
-    pt++;
-  }
+	while(*pt){
+		UART_OutChar(*pt);
+		pt++;
+	}
 }
 
 //------------UART_InUDec------------
@@ -161,27 +163,27 @@ void UART_OutString(char *pt){
 // If you enter a number above 4294967295, it will return an incorrect value
 // Backspace will remove last digit typed
 unsigned long UART_InUDec(void){
-unsigned long number=0, length=0;
-char character;
-  character = UART_InChar();
-  while(character != CR){ // accepts until <enter> is typed
-// The next line checks that the input is a digit, 0-9.
-// If the character is not 0-9, it is ignored and not echoed
-    if((character>='0') && (character<='9')) {
-      number = 10*number+(character-'0');   // this line overflows if above 4294967295
-      length++;
-      UART_OutChar(character);
-    }
-// If the input is a backspace, then the return number is
-// changed and a backspace is outputted to the screen
-    else if((character==BS) && length){
-      number /= 10;
-      length--;
-      UART_OutChar(character);
-    }
-    character = UART_InChar();
-  }
-  return number;
+	unsigned long number=0, length=0;
+	char character;
+	character = UART_InChar();
+	while(character != CR){ // accepts until <enter> is typed
+		// The next line checks that the input is a digit, 0-9.
+		// If the character is not 0-9, it is ignored and not echoed
+		if((character>='0') && (character<='9')) {
+			number = 10*number+(character-'0');   // this line overflows if above 4294967295
+			length++;
+			UART_OutChar(character);
+		}
+		// If the input is a backspace, then the return number is
+		// changed and a backspace is outputted to the screen
+		else if((character==BS) && length){
+			number /= 10;
+			length--;
+			UART_OutChar(character);
+		}
+		character = UART_InChar();
+	}
+	return number;
 }
 
 //-----------------------UART_OutUDec-----------------------
@@ -192,11 +194,11 @@ char character;
 void UART_OutUDec(unsigned long n){
 // This function uses recursion to convert decimal number
 //   of unspecified length as an ASCII string
-  if(n >= 10){
-    UART_OutUDec(n/10);
-    n = n%10;
-  }
-  UART_OutChar(n+'0'); /* n is between 0 and 9 */
+	if(n >= 10){
+		UART_OutUDec(n/10);
+		n = n%10;
+	}
+	UART_OutChar(n+'0'); /* n is between 0 and 9 */
 }
 
 //---------------------UART_InUHex----------------------------------------
@@ -210,35 +212,35 @@ void UART_OutUDec(unsigned long n){
 // If you enter a number above FFFFFFFF, it will return an incorrect value
 // Backspace will remove last digit typed
 unsigned long UART_InUHex(void){
-unsigned long number=0, digit, length=0;
-char character;
-  character = UART_InChar();
-  while(character != CR){
-    digit = 0x10; // assume bad
-    if((character>='0') && (character<='9')){
-      digit = character-'0';
-    }
-    else if((character>='A') && (character<='F')){
-      digit = (character-'A')+0xA;
-    }
-    else if((character>='a') && (character<='f')){
-      digit = (character-'a')+0xA;
-    }
-// If the character is not 0-9 or A-F, it is ignored and not echoed
-    if(digit <= 0xF){
-      number = number*0x10+digit;
-      length++;
-      UART_OutChar(character);
-    }
-// Backspace outputted and return value changed if a backspace is inputted
-    else if((character==BS) && length){
-      number /= 0x10;
-      length--;
-      UART_OutChar(character);
-    }
-    character = UART_InChar();
-  }
-  return number;
+	unsigned long number=0, digit, length=0;
+	char character;
+	character = UART_InChar();
+	while(character != CR){
+		digit = 0x10; // assume bad
+		if((character>='0') && (character<='9')){
+			digit = character-'0';
+		}
+		else if((character>='A') && (character<='F')){
+			digit = (character-'A')+0xA;
+		}
+		else if((character>='a') && (character<='f')){
+			digit = (character-'a')+0xA;
+		}
+		// If the character is not 0-9 or A-F, it is ignored and not echoed
+		if(digit <= 0xF){
+			number = number*0x10+digit;
+			length++;
+			UART_OutChar(character);
+		}
+		// Backspace outputted and return value changed if a backspace is inputted
+		else if((character==BS) && length){
+			number /= 0x10;
+			length--;
+			UART_OutChar(character);
+		}
+		character = UART_InChar();
+	}
+	return number;
 }
 
 //--------------------------UART_OutUHex----------------------------
@@ -249,18 +251,18 @@ char character;
 void UART_OutHex(unsigned long number){
 // This function uses recursion to convert the number of
 //   unspecified length as an ASCII string
-  if(number >= 0x10){
-    UART_OutHex(number/0x10);
-    UART_OutHex(number%0x10);
-  }
-  else{
-    if(number < 0xA){
-      UART_OutChar(number+'0');
-     }
-    else{
-      UART_OutChar((number-0x0A)+'A');
-    }
-  }
+	if(number >= 0x10){
+		UART_OutHex(number/0x10);
+		UART_OutHex(number%0x10);
+	}
+	else{
+		if(number < 0xA){
+			UART_OutChar(number+'0');
+		 }
+		else{
+			UART_OutChar((number-0x0A)+'A');
+		}
+	}
 }
 
 //------------UART_InString------------

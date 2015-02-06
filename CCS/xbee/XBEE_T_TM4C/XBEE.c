@@ -1,8 +1,8 @@
 // XBEE.c
 // Initializes UART1 to interface a XBee receiver.
-
-#include "inc/lm3s1968.h"
 #include "XBEE.h"
+
+#include "inc/tm4c123gh6pm.h"
 #include "FIFO.h"
 #include "Time.h"
 #include "debug.h"
