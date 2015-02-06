@@ -1,7 +1,7 @@
 // XBEE.c
 // Initializes UART1 to interface a XBee receiver.
 #include "XBEE.h"
-
+#include <stdint.h>
 #include "inc/tm4c123gh6pm.h"
 #include "FIFO.h"
 #include "Time.h"
@@ -142,7 +142,7 @@ void XBEE_Init(unsigned char dest){
   GPIO_PORTD_DEN_R |= 0x0C;             // enable digital I/O on PD2-3
                                         // UART1=priority 2
   NVIC_PRI1_R = (NVIC_PRI1_R&0xFF00FFFF)|0x00400000; // bits 23-21
-  NVIC_EN0_R |= NVIC_EN0_INT6;          // enable interrupt 6 in NVIC
+  NVIC_EN0_R |= (1<<6);          // enable interrupt 6 in NVIC
   EnableInterrupts();
 	
 	// XBee Initialization

@@ -2,6 +2,7 @@
 // This program implements the XBee transmitter end
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "inc/hw_types.h"
 #include "driverlib/sysctl.h"
 #include "Time.h"

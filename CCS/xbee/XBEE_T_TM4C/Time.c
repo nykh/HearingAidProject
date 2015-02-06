@@ -5,6 +5,7 @@
 // 2013/2/10
 
 #include "Time.h"
+#include <stdint.h>
 #include "inc/tm4c123gh6pm.h"
 
 #define NVIC_SYS_PRI3_SCPRI     0x20000000  // Priority 1

@@ -8,6 +8,11 @@ CG_TOOL_ROOT := c:/ti/ccsv6/tools/compiler/arm_5.1.10
 
 ORDERED_OBJS += \
 $(GEN_CMDS__FLAG) \
+"./FIFO.obj" \
+"./Time.obj" \
+"./UART.obj" \
+"./XBEE.obj" \
+"./debug.obj" \
 "./main.obj" \
 "./tm4c123gh6pm_startup_ccsValvano.obj" \
 "../tm4c123gh6pm.cmd" \
@@ -142,8 +147,8 @@ XBEE_T_TM4C.hex: $(EXE_OUTPUTS)
 # Other Targets
 clean:
 	-$(RM) $(EXE_OUTPUTS__QUOTED)$(BIN_OUTPUTS__QUOTED)
-	-$(RM) "main.pp" "tm4c123gh6pm_startup_ccsValvano.pp" 
-	-$(RM) "main.obj" "tm4c123gh6pm_startup_ccsValvano.obj" 
+	-$(RM) "FIFO.pp" "Time.pp" "UART.pp" "XBEE.pp" "debug.pp" "main.pp" "tm4c123gh6pm_startup_ccsValvano.pp" 
+	-$(RM) "FIFO.obj" "Time.obj" "UART.obj" "XBEE.obj" "debug.obj" "main.obj" "tm4c123gh6pm_startup_ccsValvano.obj" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

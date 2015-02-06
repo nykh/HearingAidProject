@@ -72,7 +72,7 @@ void UART_Init(void){
   GPIO_PORTA_DEN_R |= 0x03;             // enable digital I/O on PA1-0
                                         // UART0=priority 2
   NVIC_PRI1_R = (NVIC_PRI1_R&0xFFFF00FF)|0x00004000; // bits 13-15
-  NVIC_EN0_R |= NVIC_EN0_INT5;          // enable interrupt 5 in NVIC
+  NVIC_EN0_R |= (1<<5);          // enable interrupt 5 in NVIC
   EnableInterrupts();	
 }
 
