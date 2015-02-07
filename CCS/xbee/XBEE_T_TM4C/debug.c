@@ -4,14 +4,12 @@
 // Yen-Kai Huang
 // 2013/2/22
 
-#define LED                     (*((volatile unsigned long *)0x40026010))
-#define PIN_LED                 0x04
-#define GPIO_PORTG_DATA_R       (*((volatile unsigned long *)0x400263FC))
-#define GPIO_PORTG_DIR_R        (*((volatile unsigned long *)0x40026400))
-#define GPIO_PORTG_AFSEL_R      (*((volatile unsigned long *)0x40026420))
-#define GPIO_PORTG_DEN_R        (*((volatile unsigned long *)0x4002651C))
-#define SYSCTL_RCGC2_R          (*((volatile unsigned long *)0x400FE108))
-#define SYSCTL_RCGC2_GPIOG      0x00000040   // port G Clock Gating Control
+#include <stdint.h>
+#include "inc/hw_types.h"
+#include "inc/tm4c123gh6pm.h"
+
+#define PIN_LED                 0x08
+#define LED                     HWREGBITW(GPIO_PORTF_DATA_R, 3)
 
 void DisableInterrupts(void);
 void EnableInterrupts(void);
@@ -23,24 +21,24 @@ void WaitForInterrupt(void);
 //! Toggle LED
 //******************************************************************
 void Debug_Init(void) { volatile unsigned long delay;
-  SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOG;
+  SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOF;
   delay = SYSCTL_RCGC2_R;			// Delay needed
-  GPIO_PORTG_DIR_R |= PIN_LED;
-  GPIO_PORTG_AFSEL_R &=~PIN_LED;
-  GPIO_PORTG_DEN_R |= PIN_LED;
+  GPIO_PORTF_DIR_R   |= PIN_LED;
+  GPIO_PORTF_AFSEL_R &=~PIN_LED;
+  GPIO_PORTF_DEN_R   |= PIN_LED;
 }
 
 //********************* Debug_HeartBeat ****************************
 //! Toggle LED
 //******************************************************************
 void Debug_HeartBeat(void) {
-  LED = LED^PIN_LED;
+	LED ^= PIN_LED;
 }
 
 void Debug_LEDOn(void) {
-  LED = PIN_LED;
+	LED = PIN_LED;
 }
 
 void Debug_LEDOff(void) {
-  LED = 0;
+	LED = 0;
 }

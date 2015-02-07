@@ -4,6 +4,7 @@
 
 # I only want the .out or .bin file
 *.obj
+*.out
 *.prefs
 *.pp
 *.mk
