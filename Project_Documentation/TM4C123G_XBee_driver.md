@@ -13,4 +13,4 @@
 | DOUT (2) |  PD2 = U1Rx | Orange |
 
 ### Using resources on TM4C
-- UART1
+- UART0
