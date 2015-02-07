@@ -28,6 +28,7 @@ int main(void) {
 		
 		printf("%s\r\n", buf);
     
+		printf("hello world\n");/////new 
     //XBEE_SendAcknoledgeFrame(result);
 	}
 }
