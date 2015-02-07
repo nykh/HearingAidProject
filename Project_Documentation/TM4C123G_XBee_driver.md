@@ -14,3 +14,4 @@
 
 ### Using resources on TM4C
 - UART0
+- Timer 1
