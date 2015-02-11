@@ -33,7 +33,6 @@
 #define TXFIFOSUCCESS 1
 #define TXFIFOFAIL    0
 
-typedef char txDataType;
 unsigned long volatile TxPutI;// put next
 unsigned long volatile TxGetI;// get next
 txDataType static TxFifo[TXFIFOSIZE];
@@ -76,7 +75,6 @@ unsigned short TxFifo_Size(void){
 #define RXFIFOSUCCESS 1
 #define RXFIFOFAIL    0
 
-typedef char rxDataType;
 rxDataType volatile *RxPutPt; // put next
 rxDataType volatile *RxGetPt; // get next
 rxDataType static RxFifo[RXFIFOSIZE];

@@ -18,7 +18,7 @@ void WaitForInterrupt(void);
 
 void Time_Init(void){
 	// Disable SysTick during setup
-  NVIC_ST_CTRL_R &=~NVIC_ST_CTRL_ENABLE;
+    NVIC_ST_CTRL_R &=~NVIC_ST_CTRL_ENABLE;
 	NVIC_ST_RELOAD_R = 0x00FFFFFF;
 	NVIC_ST_CTRL_R |= NVIC_ST_CTRL_CLK_SRC + NVIC_ST_CTRL_ENABLE;
 }

@@ -9,8 +9,6 @@
 #include "UART.h"
 #include "XBEE.h"
 
-#include "debug.h"
-
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
 long StartCritical (void);    // previous I bit, disable interrupts
@@ -24,9 +22,10 @@ int main(void) {
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL |
 	               SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 	Time_Init();
-	Debug_Init();
 	UART_Init();
 	XBEE_Init(0x69);
+
+
 	for(;;){
 		UART_OutString("Instring: ");
 		UART_InString(buf, BUFFER_SIZE);
