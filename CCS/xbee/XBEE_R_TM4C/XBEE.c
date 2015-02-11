@@ -7,8 +7,6 @@
 #include "FIFO.h"
 #include "Time.h"
 
-#include "debug.h"
-
 // XBee characteristics
 #define FRAME_START      0x7E
 
@@ -73,10 +71,6 @@ void static XBEE_OutChar(unsigned char data){
 // hardware RX FIFO goes from 1 to 2 or more items
 // UART receiver has timed out
 void UART1_Handler(void){
-	/////////////////////////////
-	Debug_HeartBeat();
-	////////////////////////////
-	
 	if(UART1_RIS_R&UART_RIS_TXRIS){         // hardware TX FIFO <= 2 items
 		UART1_ICR_R = UART_ICR_TXIC;        // acknowledge TX FIFO
 	// copy from software TX FIFO to hardware TX FIFO
@@ -118,7 +112,7 @@ void XBEE_Init(unsigned char dest){
 	
 	// UART initialization
 	SYSCTL_RCGC1_R |= SYSCTL_RCGC1_UART1; // activate UART1
-	SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOD; // activate port A
+	SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOB; // activate port A
 	RxFifo_Init();                        // initialize empty FIFOs
 	TxFifo_Init();
 	UART1_CTL_R &= ~UART_CTL_UARTEN;      // disable UART
@@ -133,18 +127,25 @@ void XBEE_Init(unsigned char dest){
 										// enable TX and RX FIFO interrupts and RX time-out interrupt
 	UART1_IM_R |= (UART_IM_RXIM|UART_IM_TXIM|UART_IM_RTIM);
 	UART1_CTL_R |= UART_CTL_UARTEN;       // enable UART
-	GPIO_PORTD_AFSEL_R |= 0x0C;           // enable alt funct on PD2-3
-	GPIO_PORTD_DEN_R |= 0x0C;             // enable digital I/O on PD2-3
-										// UART1=priority 2
+	GPIO_PORTB_AFSEL_R |= 0x0C;           // enable alt funct on PD2-3
+	GPIO_PORTB_DEN_R |= 0x0C;             // enable digital I/O on PD2-3
+
+	GPIO_PORTB_PCTL_R = (GPIO_PORTB_PCTL_R&0xFFFFFF00)+0x00000011;  // config B1-0 as UART
+	GPIO_PORTB_AMSEL_R &= ~0x03;                                    // disable analog function on B1-0
+
+	// TODO: double check if it's the right interrupt
+	// UART1=priority 2
 	NVIC_PRI1_R = (NVIC_PRI1_R&0xFF00FFFF)|0x00400000; // bits 23-21
 	NVIC_EN0_R |= (1<<6);          // enable interrupt 6 in NVIC
-	EnableInterrupts();
+
 	
 	// XBee Initialization
 	// calculate and store destination address
 	dest_cmd[4] = convert[dest >> 4];
 	dest_cmd[5] = convert[(dest & 0x0F)];
 	
+	EnableInterrupts();
+
 	// X, wait 1.1s, +++, wait 1.1s, WFR
 	XBEE_OutChar('X');
 	Time_Wait10ms(150);

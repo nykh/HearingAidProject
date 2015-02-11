@@ -10,25 +10,21 @@
 #include "driverlib/sysctl.h"
 
 #include "Time.h"
+#include "UART.h"
 #include "XBEE.h"
 
-
-#include "debug.h"
-
 int main(void) {
-	char buf[50];
+#define BUFFER_SIZE 50
+	char buf[BUFFER_SIZE];
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
 	Time_Init();
-	Debug_Init();	
+	UART_Init();
 	XBEE_Init(0x4E);
-	Debug_LEDOn();
-	printf("Receiver Log\r\n");
+	puts("Receiver Log");
 	for(;;){
-		XBEE_ReceiveRxFrame(buf);
-		
-		printf("%s\r\n", buf);
-    
-		printf("hello world\n");/////new 
-    //XBEE_SendAcknoledgeFrame(result);
+		while(XBEE_ReceiveRxFrame(buf));
+		UART_OutString(buf);
+		UART_NewLine();
 	}
+#undef BUFFER_SIZE
 }

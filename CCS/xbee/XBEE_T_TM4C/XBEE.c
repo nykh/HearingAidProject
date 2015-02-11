@@ -137,17 +137,17 @@ void XBEE_Init(unsigned char dest){
   GPIO_PORTB_DEN_R |= 0x03;             // enable digital I/O on PB0-1
                                         // UART1=priority 2
 
-  GPIO_PORTB_PCTL_R = (GPIO_PORTB_PCTL_R&0xFFFFFF00)+0x00000011;
-  GPIO_PORTB_AMSEL_R &= ~0x03;
+  GPIO_PORTB_PCTL_R = (GPIO_PORTB_PCTL_R&0xFFFFFF00)+0x00000011;  // config B1-0 as UART
+  GPIO_PORTB_AMSEL_R &= ~0x03;                                    // disable analog function on B1-0
 
-  NVIC_PRI1_R = (NVIC_PRI1_R&0xFF00FFFF)|0x00400000; // bits 23-21  // TODO
-  NVIC_EN0_R |= (1<<6);          // enable interrupt 6 in NVIC  // todo
-//
-	
+  // TODO: double check if it's the right interrupt
+  NVIC_PRI1_R = (NVIC_PRI1_R&0xFF00FFFF)|0x00400000; // bits 23-21
+  NVIC_EN0_R |= (1<<6);          // enable interrupt 6 in NVIC
+
 	// XBee Initialization
 	// calculate and store destination address
 	dest_cmd[4] = convert[dest >> 4];
-  dest_cmd[5] = convert[(dest & 0x0F)];
+	dest_cmd[5] = convert[(dest & 0x0F)];
 	
     EnableInterrupts();
 

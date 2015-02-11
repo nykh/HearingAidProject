@@ -32,8 +32,6 @@ int main(void) {
 		UART_NewLine(); 
 		
 		XBee_CreateTxFrame(buf);
-		// 		do{                       // resend a frame if
-			XBee_SendTxFrame();
-		// 		}while(!XBee_TxStatus);
+		XBee_SendTxFrame();
 	}
 }
