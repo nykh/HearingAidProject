@@ -9,9 +9,10 @@
 |----------|----------|----------|
 |  VCC (1) |  3.3 V   |          |
 |  GND (10)|  GND     |          |
-|  DIN (3) |  PD3 = U1Tx | Green  |
-| DOUT (2) |  PD2 = U1Rx | Orange |
+|  DIN (3) |  PB1 = U1Tx | Green  |
+| DOUT (2) |  PB0 = U1Rx | Orange |
 
 ### Using resources on TM4C
-- UART0
+- UART0 interfaces with PC serial port
+- UART1 interfaces XBee
 - Timer 1

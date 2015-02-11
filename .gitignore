@@ -43,11 +43,15 @@ local.properties
 # PDT-specific
 .buildpath
 
+# CCS-specific
+dvt/
+RemoteSystemsTempFiles/
+targetConfigs/
+
+
 ##########################
 #  Ignore example folders
 ##########################
-dvt/
-RemoteSystemsTempFiles/
 
 examples/
 blinky/
