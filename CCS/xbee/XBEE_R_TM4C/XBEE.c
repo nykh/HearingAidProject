@@ -127,8 +127,8 @@ void XBEE_Init(unsigned char dest){
 										// enable TX and RX FIFO interrupts and RX time-out interrupt
 	UART1_IM_R |= (UART_IM_RXIM|UART_IM_TXIM|UART_IM_RTIM);
 	UART1_CTL_R |= UART_CTL_UARTEN;       // enable UART
-	GPIO_PORTB_AFSEL_R |= 0x0C;           // enable alt funct on PD2-3
-	GPIO_PORTB_DEN_R |= 0x0C;             // enable digital I/O on PD2-3
+	GPIO_PORTB_AFSEL_R |= 0x03;           // enable alt funct on PB0-1
+	GPIO_PORTB_DEN_R |= 0x03;             // enable digital I/O on PB0-1
 
 	GPIO_PORTB_PCTL_R = (GPIO_PORTB_PCTL_R&0xFFFFFF00)+0x00000011;  // config B1-0 as UART
 	GPIO_PORTB_AMSEL_R &= ~0x03;                                    // disable analog function on B1-0
