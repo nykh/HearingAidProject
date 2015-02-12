@@ -38,12 +38,12 @@
 #include "inc/tm4c123gh6pm.h"
 #include "FIFO.h"
 
-
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
 long StartCritical (void);    // previous I bit, disable interrupts
 void EndCritical(long sr);    // restore I bit to previous value
 void WaitForInterrupt(void);  // low power mode
+
 #define FIFOSIZE   16         // size of the FIFOs (must be power of 2)
 #define FIFOSUCCESS 1         // return value on success
 #define FIFOFAIL    0         // return value on failure
@@ -113,6 +113,7 @@ void UART_OutChar(unsigned char data){
   copySoftwareToHardware();
   UART0_IM_R |= UART_IM_TXIM;           // enable TX FIFO interrupt
 }
+
 // output a CR character
 void UART_NewLine(void){
 	while(UART0TxFifo_Put(CR) == FIFOFAIL){};
@@ -121,6 +122,7 @@ void UART_NewLine(void){
   copySoftwareToHardware();
   UART0_IM_R |= UART_IM_TXIM;           // enable TX FIFO interrupt
 }
+
 // at least one of three things has happened:
 // hardware TX FIFO goes from 3 to 2 or less items
 // hardware RX FIFO goes from 1 to 2 or more items
@@ -153,8 +155,7 @@ void UART0_Handler(void){
 // Output: none
 void UART_OutString(char *pt){
 	while(*pt){
-		UART_OutChar(*pt);
-		pt++;
+		UART_OutChar(*pt++);
 	}
 }
 

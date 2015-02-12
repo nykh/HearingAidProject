@@ -16,7 +16,10 @@
 int main(void) {
 #define BUFFER_SIZE 50
 	char buf[BUFFER_SIZE];
+
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
+	// TODO: = 80 MHz / 4 = 20 MHz
+
 	Time_Init();
 	UART_Init();
 	XBEE_Init(0x4E);

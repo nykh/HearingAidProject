@@ -121,8 +121,8 @@ void XBEE_Init(unsigned char dest){
 										// 8 bit word length (no parity bits, one stop bit, FIFOs)
 	UART1_LCRH_R = (UART_LCRH_WLEN_8|UART_LCRH_FEN);
 	UART1_IFLS_R &= ~0x3F;                // clear TX and RX interrupt FIFO level fields
-										// configure interrupt for TX FIFO <= 1/8 full
-										// configure interrupt for RX FIFO >= 1/8 full
+										  // configure interrupt for TX FIFO <= 1/8 full
+									      // configure interrupt for RX FIFO >= 1/8 full
 	UART1_IFLS_R += (UART_IFLS_TX1_8|UART_IFLS_RX1_8);
 										// enable TX and RX FIFO interrupts and RX time-out interrupt
 	UART1_IM_R |= (UART_IM_RXIM|UART_IM_TXIM|UART_IM_RTIM);
@@ -154,6 +154,7 @@ void XBEE_Init(unsigned char dest){
 	}
 	Time_Wait10ms(150);
 	XBEE_WaitForResponse();
+
 	// Set Destination, wait 20ms, WFR
 	XBEE_OutString(dest_cmd);
 	SHORT_WAIT();

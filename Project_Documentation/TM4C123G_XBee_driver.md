@@ -12,7 +12,7 @@
 |  DIN (3) |  PB1 = U1Tx | Green  |
 | DOUT (2) |  PB0 = U1Rx | Orange |
 
-### Using resources on TM4C
+## Using resources on TM4C
 - UART0 interfaces with PC serial port
 - UART1 interfaces XBee
 - Timer 1
