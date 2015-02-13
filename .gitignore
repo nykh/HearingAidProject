@@ -3,6 +3,8 @@
 ##################################
 
 # I only want the .out or .bin file
+*.d
+*.o
 *.obj
 *.out
 *.prefs
@@ -48,6 +50,21 @@ dvt/
 RemoteSystemsTempFiles/
 targetConfigs/
 
+# Keil-specific
+*.axf
+*.crf
+*.iex
+*.uvopt
+*.uvgui
+*.uvgui.*
+*.map
+*.lst
+*.plg
+*.dep
+*.htm
+*.bak
+*.tra
+*.lnp
 
 ##########################
 #  Ignore example folders
