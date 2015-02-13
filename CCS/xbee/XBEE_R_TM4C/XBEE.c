@@ -112,7 +112,8 @@ void XBEE_Init(unsigned char dest){
 	
 	// UART initialization
 	SYSCTL_RCGC1_R |= SYSCTL_RCGC1_UART1; // activate UART1
-	SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOB; // activate port A
+	SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOB; // activate port B
+
 	RxFifo_Init();                        // initialize empty FIFOs
 	TxFifo_Init();
 	UART1_CTL_R &= ~UART_CTL_UARTEN;      // disable UART

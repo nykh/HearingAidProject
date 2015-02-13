@@ -20,7 +20,7 @@ char static buf[BUFFER_SIZE];
 
 int main(void) {
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL |
-	               SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
+	               SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 	Time_Init();
 	UART_Init();
 	XBEE_Init(0x69);

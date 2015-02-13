@@ -16,9 +16,11 @@
 int main(void) {
 #define BUFFER_SIZE 50
 	char buf[BUFFER_SIZE];
-	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_8MHZ);
+	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 	Time_Init();
 	UART_Init();
+	UART_OutString("uart initialization complete...\n\r");
+
 	XBEE_Init(0x4E);
 	puts("Receiver Log");
 	for(;;){
