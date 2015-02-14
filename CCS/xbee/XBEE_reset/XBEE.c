@@ -20,11 +20,7 @@ char static frame[30];
 #define DESTINATION_HI frame[5]
 #define DESTINATION_LO frame[6]
 #define DATA        (&frame[8]) // 50 - 7 = 43
-
-void EnableInterrupts(void);  // Enable interrupts
-#define SHORT_WAIT() \
-	do{ Time_Wait10ms(50); XBEE_WaitForResponse(); }  \
-	while(0)                                          \
+                                     \
 
 // copy from hardware RX FIFO to software RX FIFO
 // stop when hardware RX FIFO is empty or software RX FIFO is full
@@ -46,7 +42,7 @@ void static copySoftwareToHardware(void){
   }
 }
 
-void static XBEE_WaitForResponse(void) {
+void static XBEE_WaitForXBeeOK(void) {
 	char letter;
 	while(RxFifo_Get(&letter) == RXFIFOFAIL && letter != 'O');
 	while(RxFifo_Get(&letter) == RXFIFOFAIL && letter != 'K');
@@ -76,7 +72,6 @@ void static XBEE_OutChar(unsigned char data){
 // hardware RX FIFO goes from 1 to 2 or more items
 // UART receiver has timed out
 void UART1_Handler(void){
-
   if(UART1_RIS_R&UART_RIS_TXRIS){       // hardware TX FIFO <= 2 items
     UART1_ICR_R = UART_ICR_TXIC;        // acknowledge TX FIFO
     // copy from software TX FIFO to hardware TX FIFO
@@ -97,28 +92,48 @@ void UART1_Handler(void){
   }
 }
 
-
 //------------XBEE_OutString------------
 // Output String (NULL termination)
 // Input: pointer to a NULL-terminated string to be transferred
 // Output: none
-void static XBEE_OutString(char *pt){
+void static XBEE_OutString(const char *pt){
   while(*pt){
-    XBEE_OutChar(*pt);
-    pt++;
+    XBEE_OutChar(*pt++);
   }
 	XBEE_OutChar(CR);
 }
 
+void static XBEE_command(const char *cmd) {
+	XBEE_OutChar('A');
+	XBEE_OutChar('T');
+	XBEE_OutString(cmd);
+	Time_Wait10ms(50);
+	XBEE_WaitForXBeeOK();
+}
 
-void XBEE_Init(unsigned char dest){
-  register unsigned char i;
-	const char convert[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-	char dest_cmd[7] = "ATDL00";
-	
-  // UART initialization
+void static XBEE_enter_command_mode(void) {
+	// X, wait 1.1s, +++, wait 1.1s, WFR
+	XBEE_OutChar('X');
+	Time_Wait10ms(150);
+	XBEE_OutChar('+'); XBEE_OutChar('+'); XBEE_OutChar('+');
+	Time_Wait10ms(150);
+	XBEE_WaitForXBeeOK();
+}
+
+
+void XBEE_Reset(void) {
+	// XBee Initialization
+	XBEE_enter_command_mode();
+	XBEE_command("RE");
+	XBEE_command("WR");
+	XBEE_WaitForXBeeOK();
+	XBEE_command("CN");
+}
+
+void XBEE_Init(void){
+  // UART1 initialization
   SYSCTL_RCGC1_R |= SYSCTL_RCGC1_UART1; // activate UART1
-  SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOB; // activate port B
+  SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R1; // activate port B
   RxFifo_Init();                        // initialize empty FIFOs
   TxFifo_Init();
   UART1_CTL_R &= ~UART_CTL_UARTEN;      // disable UART
@@ -143,50 +158,6 @@ void XBEE_Init(unsigned char dest){
   // TODO: double check if it's the right interrupt
   NVIC_PRI1_R = (NVIC_PRI1_R&0xFF00FFFF)|0x00400000; // bits 23-21
   NVIC_EN0_R |= (1<<6);          // enable interrupt 6 in NVIC
-
-	// XBee Initialization
-	// calculate and store destination address
-	dest_cmd[4] = convert[dest >> 4];
-	dest_cmd[5] = convert[(dest & 0x0F)];
-	
-    EnableInterrupts();
-
-	// X, wait 1.1s, +++, wait 1.1s, WFR
-	XBEE_OutChar('X');
-	Time_Wait10ms(150);
-	for(i=0; i <3; ++i){
-		XBEE_OutChar('+');
-	}
-	Time_Wait10ms(150);
-	XBEE_WaitForResponse();
-  // Set Destination, wait 20ms, WFR
-	XBEE_OutString(dest_cmd);
-	SHORT_WAIT();
-	// Sets destination high addr, wait 20 ms, WFR
-	XBEE_OutString("ATDH0");
-	SHORT_WAIT();
-	// Sets Channel and PAN ID
-	XBEE_OutString("ATCH0C");
-	SHORT_WAIT();
-	XBEE_OutString("ATID0");
-	SHORT_WAIT();
-  // Sets my address, wait 20 ms, WFR
-	XBEE_OutString("ATMY" MYADDR);
-	SHORT_WAIT();
-	// API 1, wait 20 ms, WFR
-	XBEE_OutString("ATAP1");
-	SHORT_WAIT();
-	//Ends command mode, wait 20 ms, WFR
-	XBEE_OutString("ATCN");
-	SHORT_WAIT();
- 
-  // initizlize the frame
-  for(i = 0; i < 30; i++){ frame[i] = 0; }
-  frame[0] = FRAME_START;
- 	frame[1] = 0;
-  frame[3] = 0x01;	
-	frame[5] = 0;
-	frame[6] = dest;	
 }
 
 // Creates a frame out of the data and put it into a FIFO
@@ -235,4 +206,47 @@ unsigned char XBee_TxStatus(void){
 	return (character == 0);
 }
 
+unsigned char XBEE_ReceiveRxFrame(char *data){
+	char character;
+	unsigned short length;
+	unsigned char sum = 0;
+	unsigned short i;
+
+	// Header
+	while(XBEE_InChar() != FRAME_START); // Wait until a proper head start
+
+							  // length
+	length = (XBEE_InChar())<<8;
+	length += (XBEE_InChar()) - 4;
+
+	// API, ID, Destination information are ignored
+	for(i=4; i != 0; --i) {
+		sum += XBEE_InChar();
+	}
+
+	character = XBEE_InChar();  // optional 0x00 does not affect sum
+	length -= 1;
+	if(character != 0x00){
+		*data = character;
+		++data;
+		sum += character;
+	}
+
+	while(length > 0){          // data
+		character = XBEE_InChar();
+		sum += character;
+		--length;
+
+		*data = character;
+		++data;
+	}
+								// Checksum
+	if(sum + XBEE_InChar() != 0xFF){
+		*data = 'X';
+		++data;
+	}
+
+	*data = 0;                  // null terminate
+	return 1;
+}
 
