@@ -1,8 +1,19 @@
 // XBEE.c
 // Initializes UART1 to interface a XBee receiver.
 #include "XBEE.h"
+
+#define TARGET_IS_BLIZZARD_RA1
+
 #include <stdint.h>
+#include <stdbool.h>
 #include "inc/tm4c123gh6pm.h"
+#include "inc/hw_types.h"
+#include "inc/hw_memmap.h"
+#include "driverlib/rom.h"
+#include "driverlib/gpio.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/uart.h"
+
 #include "FIFO.h"
 #include "Time.h"
 
@@ -20,7 +31,6 @@ char static frame[30];
 #define DESTINATION_HI frame[5]
 #define DESTINATION_LO frame[6]
 #define DATA        (&frame[8]) // 50 - 7 = 43
-                                     \
 
 // copy from hardware RX FIFO to software RX FIFO
 // stop when hardware RX FIFO is empty or software RX FIFO is full
@@ -131,8 +141,7 @@ void XBEE_Reset(void) {
 }
 
 void XBEE_Init(void){
-  // UART1 initialization
-  SYSCTL_RCGC1_R |= SYSCTL_RCGC1_UART1; // activate UART1
+  SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R1; // activate UART1
   SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R1; // activate port B
   RxFifo_Init();                        // initialize empty FIFOs
   TxFifo_Init();
@@ -206,11 +215,13 @@ unsigned char XBee_TxStatus(void){
 	return (character == 0);
 }
 
-unsigned char XBEE_ReceiveRxFrame(char *data){
+// return 0 if successful transmission; 1 if the checksum is incorrect
+unsigned char XBEE_ReceiveRxFrame(char *buf){
 	char character;
 	unsigned short length;
 	unsigned char sum = 0;
 	unsigned short i;
+	char *data = buf;
 
 	// Header
 	while(XBEE_InChar() != FRAME_START); // Wait until a proper head start
@@ -242,11 +253,11 @@ unsigned char XBEE_ReceiveRxFrame(char *data){
 	}
 								// Checksum
 	if(sum + XBEE_InChar() != 0xFF){
-		*data = 'X';
-		++data;
+		*buf++ = 'X';
+		*buf = '\0';
+		return 1;
+	} else {
+		*data = '\0';
+		return 0;
 	}
-
-	*data = 0;                  // null terminate
-	return 1;
 }
-

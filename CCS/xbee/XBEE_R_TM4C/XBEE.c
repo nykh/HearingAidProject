@@ -174,11 +174,12 @@ void XBEE_Init(unsigned char dest){
 }
 
 // return 0 if successful transmission; 1 if the checksum is incorrect
-unsigned char XBEE_ReceiveRxFrame(char *data){
+unsigned char XBEE_ReceiveRxFrame(char *buf){
 	char character;
 	unsigned short length;
 	unsigned char sum = 0;
 	unsigned short i;
+	char *data = buf;
 	
 	// Header
 	while(XBEE_InChar() != FRAME_START); // Wait until a proper head start
@@ -210,12 +211,13 @@ unsigned char XBEE_ReceiveRxFrame(char *data){
 	}
 								// Checksum
 	if(sum + XBEE_InChar() != 0xFF){
-		*data = 'X';
-		++data;
+		*buf++ = 'X';
+		*buf = '\0';
+		return 1;
+	} else {
+		*data = '\0';
+		return 0;
 	}
-	
-	*data = 0;                  // null terminate
-	return 1;
 }
 
 void XBEE_SendAcknoledgeFrame(unsigned char acknoledge){

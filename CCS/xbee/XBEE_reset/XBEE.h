@@ -14,6 +14,7 @@
 #define SP   0x20
 #define DEL  0x7F
 
+void XBEE_Init();
 void XBEE_Reset();
 
 #endif // __XBEE_H__

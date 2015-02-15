@@ -9,6 +9,7 @@
 #include "driverlib/sysctl.h"
 #include "Time.h"
 #include "XBEE.h"
+#include "debug.h"
 
 
 void EnableInterrupts(void);  // Enable interrupts
@@ -17,18 +18,15 @@ int main(void) { volatile unsigned long dummy;
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL |
 	               SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 
-	SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R5;
-    dummy = SYSCTL_RCGC2_R;
-
-    GPIO_PORTF_DIR_R |= 0x04;
-	GPIO_PORTF_DEN_R |= 0x04;
-
-	/***debug******/ GPIO_PORTF_DATA_R &=~ 0x04;
+	_____debug_Init();
+	_____debug_heartbeat(); // on
 	Time_Init();
 	XBEE_Init();
+	_____debug_heartbeat(); // off
 	EnableInterrupts();
 	XBEE_Reset();
-	/***debug******/ GPIO_PORTF_DATA_R |= 0x04;
+	_____debug_heartbeat(); // on
+
 
 	for(;;);
 }

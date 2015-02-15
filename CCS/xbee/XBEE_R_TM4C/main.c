@@ -19,10 +19,11 @@ int main(void) {
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 	Time_Init();
 	UART_Init();
-	UART_OutString("uart initialization complete...\n\r");
+	UART_OutString("UART initialization complete...\n\r");
 
 	XBEE_Init(0x4E);
-	puts("Receiver Log");
+	UART_OutString("XBEE initialization complete...\n\r");
+
 	for(;;){
 		while(XBEE_ReceiveRxFrame(buf));
 		UART_OutString(buf);

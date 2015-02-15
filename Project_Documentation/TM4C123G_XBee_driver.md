@@ -15,4 +15,5 @@
 ## Using resources on TM4C
 - UART0 interfaces with PC serial port
 - UART1 interfaces XBee
-- Timer 1
+- Timer
+- 

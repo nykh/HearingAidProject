@@ -24,6 +24,8 @@
 
 #include <stdint.h>
 
+#define TARGET_IS_BLIZZARD_RA1
+
 //*****************************************************************************
 //
 // Forward declaration of the default fault handlers.
