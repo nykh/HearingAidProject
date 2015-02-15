@@ -136,7 +136,6 @@ void XBEE_Reset(void) {
 	XBEE_enter_command_mode();
 	XBEE_command("RE");
 	XBEE_command("WR");
-	XBEE_WaitForXBeeOK();
 	XBEE_command("CN");
 }
 
