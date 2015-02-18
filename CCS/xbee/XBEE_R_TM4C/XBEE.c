@@ -1,4 +1,3 @@
-// XBEE.c
 // Initializes UART1 to interface a XBee receiver.
 #include "XBEE.h"
 #include <stdint.h>
@@ -283,14 +282,20 @@ unsigned char XBEE_ReceiveRxFrame(char *buf){
 	}
 }
 
-//void XBEE_SendAcknoledgeFrame(unsigned char acknoledge){
-//	static char id = 0x01;
-//	unsigned char i;
-//	ID = id;
-//	RESULT = acknoledge;
-//	CHECKSUM = BASE_CHKSUM - id - acknoledge;
-//
-//	for(i = 0; i < 7; i++){
-//		XBEE_OutChar(acknowledge_frame[i]);
-//	}
-//}
+char static acknowledge_frame[7] = {0x7E, 0, 3, 0x89, 0, 0, 0};
+#define ACK_ID acknowledge_frame[4]
+#define ACK_RESULT acknowledge_frame[5]
+#define ACK_CHECKSUM acknowledge_frame[6]
+#define ACK_BASE_CHKSUM 0x78 // = 0xFF - 0x89
+
+void XBEE_SendAcknoledgeFrame(unsigned char acknowledge){
+	static char id = 0x01;
+	unsigned char i;
+	ACK_ID = id;
+	ACK_RESULT = acknowledge;
+	ACK_CHECKSUM = ACK_BASE_CHKSUM - id - acknowledge;
+
+	for(i = 0; i < 7; i++){
+		XBEE_OutChar(acknowledge_frame[i]);
+	}
+}

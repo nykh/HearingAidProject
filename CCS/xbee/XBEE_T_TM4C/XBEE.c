@@ -1,4 +1,3 @@
-// XBEE.c
 // Initializes UART1 to interface a XBee receiver.
 #include "XBEE.h"
 #include <stdint.h>
@@ -57,7 +56,7 @@ unsigned char static XBEE_InChar(void){
 // output ASCII character to UART
 // spin if TxFifo is full
 void static XBEE_OutChar(unsigned char data){
-  while(TxFifo_Put(data) == TXFIFOFAIL){};		
+  while(TxFifo_Put(data) == TXFIFOFAIL){};
   UART1_IM_R &= ~UART_IM_TXIM;          // disable TX FIFO interrupt
   copySoftwareToHardware();
   UART1_IM_R |= UART_IM_TXIM;           // enable TX FIFO interrupt
@@ -224,14 +223,79 @@ void XBee_SendTxFrame(void){
 unsigned char XBee_TxStatus(void){
 	unsigned char i;
 	unsigned char character;
-	
+
 	if(XBEE_InChar() != FRAME_START) return 0; // invalid frame start
-	
+
 	for(i = 5; i > 0; --i){
 		character = XBEE_InChar();
 	} XBEE_InChar(); // ignore checksum
-	
+
 	return (character == 0);
 }
 
 
+
+// return 0 if successful transmission; 1 if the checksum is incorrect
+unsigned char XBEE_ReceiveRxFrame(char *buf){
+	char character;
+	unsigned short length;
+	unsigned char sum = 0;
+	unsigned short i;
+	char *data = buf;
+
+	// Header
+	while(XBEE_InChar() != FRAME_START); // Wait until a proper head start
+
+							  // length
+	length = (XBEE_InChar())<<8;
+	length += (XBEE_InChar()) - 4;
+
+	// API, ID, Destination information are ignored
+	for(i=4; i != 0; --i) {
+		sum += XBEE_InChar();
+	}
+
+	character = XBEE_InChar();  // optional 0x00 does not affect sum
+	length -= 1;
+	if(character != 0x00){
+		*data = character;
+		++data;
+		sum += character;
+	}
+
+	while(length > 0){          // data
+		character = XBEE_InChar();
+		sum += character;
+		--length;
+
+		*data = character;
+		++data;
+	}
+								// Checksum
+	if(sum + XBEE_InChar() != 0xFF){
+		*buf++ = 'X';
+		*buf = '\0';
+		return 1;
+	} else {
+		*data = '\0';
+		return 0;
+	}
+}
+
+char static acknowledge_frame[7] = {0x7E, 0, 3, 0x89, 0, 0, 0};
+#define ACK_ID acknowledge_frame[4]
+#define ACK_RESULT acknowledge_frame[5]
+#define ACK_CHECKSUM acknowledge_frame[6]
+#define ACK_BASE_CHKSUM 0x78 // = 0xFF - 0x89
+
+void XBEE_SendAcknoledgeFrame(unsigned char acknowledge){
+	static char id = 0x01;
+	unsigned char i;
+	ACK_ID = id;
+	ACK_RESULT = acknowledge;
+	ACK_CHECKSUM = ACK_BASE_CHKSUM - id - acknowledge;
+
+	for(i = 0; i < 7; i++){
+		XBEE_OutChar(acknowledge_frame[i]);
+	}
+}
