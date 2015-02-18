@@ -21,7 +21,9 @@ int main(void) {
 	UART_Init();
 	UART_OutString("UART initialization complete...\n\r");
 
-	XBEE_Init(0x4E);
+	XBEE_Init();
+	XBEE_configure(0x79, 0x69);
+
 	UART_OutString("XBEE initialization complete...\n\r");
 
 	for(;;){
