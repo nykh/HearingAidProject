@@ -12,14 +12,14 @@
 unsigned short frame_len;
 char static frame[30];
 
-#define FRAME_HEAD  frame[0]
-#define LENGTH_HI   frame[1]
-#define LENGTH      frame[2]
-#define API         frame[3]
-#define ID          frame[4]
-#define DESTINATION_HI frame[5]
-#define DESTINATION_LO frame[6]
-#define DATA        (&frame[8]) // 50 - 7 = 43
+#define FRAME_HEAD       frame[0]
+#define LENGTH_HI        frame[1]
+#define LENGTH           frame[2]
+#define API              frame[3]
+#define ID               frame[4]
+#define DESTINATION_HI   frame[5]
+#define DESTINATION_LO   frame[6]
+#define DATA             (&frame[8]) // 50 - 7 = 43
 
 void EnableInterrupts(void);  // Enable interrupts
 #define SHORT_WAIT() \
@@ -44,14 +44,6 @@ void static copySoftwareToHardware(void){
     TxFifo_Get(&letter);
     UART1_DR_R = letter;
   }
-}
-
-void static XBEE_WaitForResponse(void) {
-	char letter;
-	while(RxFifo_Get(&letter) == RXFIFOFAIL && letter != 'O');
-	while(RxFifo_Get(&letter) == RXFIFOFAIL && letter != 'K');
-	while(RxFifo_Get(&letter) == RXFIFOFAIL && letter != CR);
-  
 }
 
 // input ASCII character from UART
@@ -102,7 +94,7 @@ void UART1_Handler(void){
 // Output String (NULL termination)
 // Input: pointer to a NULL-terminated string to be transferred
 // Output: none
-void static XBEE_OutString(char *pt){
+void static XBEE_OutString(const char *pt){
   while(*pt){
     XBEE_OutChar(*pt);
     pt++;
@@ -110,83 +102,90 @@ void static XBEE_OutString(char *pt){
 	XBEE_OutChar(CR);
 }
 
+void static XBEE_WaitForXBeeOK(void) {
+	char letter;
+	while(RxFifo_Get(&letter) == RXFIFOFAIL && letter != 'O');
+	while(RxFifo_Get(&letter) == RXFIFOFAIL && letter != 'K');
+	while(RxFifo_Get(&letter) == RXFIFOFAIL && letter != CR);
+}
 
-void XBEE_Init(unsigned char dest){
-  register unsigned char i;
-	const char convert[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-	char dest_cmd[7] = "ATDL00";
-	
-  // UART initialization
-  SYSCTL_RCGC1_R |= SYSCTL_RCGC1_UART1; // activate UART1
-  SYSCTL_RCGC2_R |= SYSCTL_RCGC2_GPIOB; // activate port B
-  RxFifo_Init();                        // initialize empty FIFOs
-  TxFifo_Init();
-  UART1_CTL_R &= ~UART_CTL_UARTEN;      // disable UART
-  UART1_IBRD_R = 325;                   // IBRD = int(50,000,000 / (16 * 115,200)) = int(27.1267)
-  UART1_FBRD_R = 34;                    // FBRD = int(0.1267 * 64 + 0.5) = 8
-                                        // 8 bit word length (no parity bits, one stop bit, FIFOs)
-  UART1_LCRH_R = (UART_LCRH_WLEN_8|UART_LCRH_FEN);
-  UART1_IFLS_R &= ~0x3F;                // clear TX and RX interrupt FIFO level fields
-                                        // configure interrupt for TX FIFO <= 1/8 full
-                                        // configure interrupt for RX FIFO >= 1/8 full
-  UART1_IFLS_R += (UART_IFLS_TX1_8|UART_IFLS_RX1_8);
-                                        // enable TX and RX FIFO interrupts and RX time-out interrupt
-  UART1_IM_R |= (UART_IM_RXIM|UART_IM_TXIM|UART_IM_RTIM);
-  UART1_CTL_R |= UART_CTL_UARTEN;       // enable UART
-  GPIO_PORTB_AFSEL_R |= 0x03;           // enable alt funct on PB0-1
-  GPIO_PORTB_DEN_R |= 0x03;             // enable digital I/O on PB0-1
-                                        // UART1=priority 2
+void static XBEE_command(const char *cmd) {
+	XBEE_OutChar('A');
+	XBEE_OutChar('T');
+	XBEE_OutString(cmd);
+	Time_Wait10ms(50);
+	XBEE_WaitForXBeeOK();
+}
 
-  GPIO_PORTB_PCTL_R = (GPIO_PORTB_PCTL_R&0xFFFFFF00)+0x00000011;  // config B1-0 as UART
-  GPIO_PORTB_AMSEL_R &= ~0x03;                                    // disable analog function on B1-0
-
-  // TODO: double check if it's the right interrupt
-  NVIC_PRI1_R = (NVIC_PRI1_R&0xFF00FFFF)|0x00400000; // bits 23-21
-  NVIC_EN0_R |= (1<<6);          // enable interrupt 6 in NVIC
-
-	// XBee Initialization
-	// calculate and store destination address
-	dest_cmd[4] = convert[dest >> 4];
-	dest_cmd[5] = convert[(dest & 0x0F)];
-	
-    EnableInterrupts();
-
+void static XBEE_enter_command_mode(void) {
 	// X, wait 1.1s, +++, wait 1.1s, WFR
 	XBEE_OutChar('X');
 	Time_Wait10ms(150);
-	for(i=0; i <3; ++i){
-		XBEE_OutChar('+');
-	}
+	XBEE_OutChar('+'); XBEE_OutChar('+'); XBEE_OutChar('+');
 	Time_Wait10ms(150);
-	XBEE_WaitForResponse();
-  // Set Destination, wait 20ms, WFR
-	XBEE_OutString(dest_cmd);
-	SHORT_WAIT();
-	// Sets destination high addr, wait 20 ms, WFR
-	XBEE_OutString("ATDH0");
-	SHORT_WAIT();
-	// Sets Channel and PAN ID
-	XBEE_OutString("ATCH0C");
-	SHORT_WAIT();
-	XBEE_OutString("ATID0");
-	SHORT_WAIT();
-  // Sets my address, wait 20 ms, WFR
-	XBEE_OutString("ATMY" MYADDR);
-	SHORT_WAIT();
-	// API 1, wait 20 ms, WFR
-	XBEE_OutString("ATAP1");
-	SHORT_WAIT();
-	//Ends command mode, wait 20 ms, WFR
-	XBEE_OutString("ATCN");
-	SHORT_WAIT();
- 
-  // initizlize the frame
-  for(i = 0; i < 30; i++){ frame[i] = 0; }
-  frame[0] = FRAME_START;
- 	frame[1] = 0;
-  frame[3] = 0x01;	
+	XBEE_WaitForXBeeOK();
+}
+
+void XBEE_Init(void){
+	SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R1; // activate UART1
+	SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R1; // activate port B
+	RxFifo_Init();                        // initialize empty FIFOs
+	TxFifo_Init();
+	UART1_CTL_R &= ~UART_CTL_UARTEN;      // disable UART
+	UART1_IBRD_R = 325;                   // IBRD = int(50,000,000 / (16 * 115,200)) = int(27.1267)
+	UART1_FBRD_R = 34;                    // FBRD = int(0.1267 * 64 + 0.5) = 8
+										// 8 bit word length (no parity bits, one stop bit, FIFOs)
+	UART1_LCRH_R = (UART_LCRH_WLEN_8|UART_LCRH_FEN);
+	UART1_IFLS_R &= ~0x3F;                // clear TX and RX interrupt FIFO level fields
+										// configure interrupt for TX FIFO <= 1/8 full
+										// configure interrupt for RX FIFO >= 1/8 full
+	UART1_IFLS_R += (UART_IFLS_TX1_8|UART_IFLS_RX1_8);
+										// enable TX and RX FIFO interrupts and RX time-out interrupt
+	UART1_IM_R |= (UART_IM_RXIM|UART_IM_TXIM|UART_IM_RTIM);
+	UART1_CTL_R |= UART_CTL_UARTEN;       // enable UART
+	GPIO_PORTB_AFSEL_R |= 0x03;           // enable alt funct on PB0-1
+	GPIO_PORTB_DEN_R |= 0x03;             // enable digital I/O on PB0-1
+										// UART1=priority 2
+
+	GPIO_PORTB_PCTL_R = (GPIO_PORTB_PCTL_R&0xFFFFFF00)+0x00000011;  // config B1-0 as UART
+	GPIO_PORTB_AMSEL_R &= ~0x03;                                    // disable analog function on B1-0
+
+	// TODO: double check if it's the right interrupt
+	NVIC_PRI1_R = (NVIC_PRI1_R&0xFF00FFFF)|0x00400000; // bits 23-21
+	NVIC_EN0_R |= (1<<6);          // enable interrupt 6 in NVIC
+}
+
+static void Initialize_Frame(unsigned char dest) {
+	register unsigned char i;
+	// initizlize the frame
+	for(i = 0; i < 30; ++i) {
+		frame[i] = 0;
+	}
+
+	frame[0] = FRAME_START;
+	frame[1] = 0;
+	frame[3] = 0x01;
 	frame[5] = 0;
-	frame[6] = dest;	
+	frame[6] = dest;
+}
+
+void XBEE_configure(unsigned char destination, unsigned char myaddr) {
+    char destination_low[5] = "DL00";
+    char my_address[5]      = "MY00";
+
+	destination_low[2] += destination >> 4;
+	destination_low[3] += (destination & 0xF);
+	my_address[2] += myaddr >> 4;
+	my_address[3] += (myaddr & 0xF);
+
+	XBEE_enter_command_mode();
+	XBEE_command(destination_low); // DLxx
+	XBEE_command("DH0");
+	XBEE_command(my_address);      // MYxx
+	XBEE_command("AP1");
+	XBEE_command("CN");
+
+	Initialize_Frame(destination);
 }
 
 // Creates a frame out of the data and put it into a FIFO

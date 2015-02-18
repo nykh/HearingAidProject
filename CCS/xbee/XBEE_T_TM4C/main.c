@@ -23,7 +23,8 @@ int main(void) {
 	               SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 	Time_Init();
 	UART_Init();
-	XBEE_Init(0x69);
+	XBEE_Init();
+	XBEE_configure(0x69, 0x79);
 
 
 	for(;;){

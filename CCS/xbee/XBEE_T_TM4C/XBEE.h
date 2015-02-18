@@ -4,8 +4,6 @@
 #ifndef __XBEE_H__
 #define __XBEE_H__
 
-#define MYADDR   "79"
-
 // standard ASCII symbols
 #define CR   0x0D
 #define LF   0x0A
@@ -14,7 +12,8 @@
 #define SP   0x20
 #define DEL  0x7F
 
-void XBEE_Init(unsigned char dest);
+void XBEE_Init();
+void XBEE_configure(unsigned char destination, unsigned char myaddr);
 void XBee_CreateTxFrame(char* data);
 void XBee_SendTxFrame(void);
 unsigned char XBee_TxStatus(void);
