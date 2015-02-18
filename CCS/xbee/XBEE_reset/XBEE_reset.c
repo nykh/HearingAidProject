@@ -1,6 +1,6 @@
 // XBEE.c
 // Initializes UART1 to interface a XBee receiver.
-#include "XBEE.h"
+#include "XBEE_reset.h"
 
 #define TARGET_IS_BLIZZARD_RA1
 

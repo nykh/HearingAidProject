@@ -8,7 +8,7 @@
 #include "inc/hw_types.h"
 #include "driverlib/sysctl.h"
 #include "Time.h"
-#include "XBEE.h"
+#include "XBEE_reset.h"
 #include "debug.h"
 
 
