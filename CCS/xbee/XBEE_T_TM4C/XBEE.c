@@ -5,21 +5,6 @@
 #include "FIFO.h"
 #include "Time.h"
 
-// XBee characteristics
-#define FRAME_START      0x7E
-
-unsigned short frame_len;
-char static frame[30];
-
-#define FRAME_HEAD       frame[0]
-#define LENGTH_HI        frame[1]
-#define LENGTH           frame[2]
-#define API              frame[3]
-#define ID               frame[4]
-#define DESTINATION_HI   frame[5]
-#define DESTINATION_LO   frame[6]
-#define DATA             (&frame[8]) // 50 - 7 = 43
-
 void EnableInterrupts(void);  // Enable interrupts
 #define SHORT_WAIT() \
 	do{ Time_Wait10ms(50); XBEE_WaitForResponse(); }  \
@@ -93,13 +78,20 @@ void UART1_Handler(void){
 // Output String (NULL termination)
 // Input: pointer to a NULL-terminated string to be transferred
 // Output: none
-void static XBEE_OutString(const char *pt){
-  while(*pt){
-    XBEE_OutChar(*pt);
-    pt++;
+void XBEE_OutString(const char *buf){
+  while(*buf){
+    XBEE_OutChar(*buf++);
   }
-	XBEE_OutChar(CR);
+  XBEE_OutChar('\r');
 }
+
+void XBEE_InString(char *buf) {
+	unsigned char c;
+	while((c = XBEE_InChar()) != '\r')
+		*buf++ = c;
+	*buf = '\0';
+}
+
 
 void static XBEE_WaitForXBeeOK(void) {
 	char letter;
@@ -149,29 +141,15 @@ void XBEE_Init(void){
 	GPIO_PORTB_PCTL_R = (GPIO_PORTB_PCTL_R&0xFFFFFF00)+0x00000011;  // config B1-0 as UART
 	GPIO_PORTB_AMSEL_R &= ~0x03;                                    // disable analog function on B1-0
 
-	// TODO: double check if it's the right interrupt
 	NVIC_PRI1_R = (NVIC_PRI1_R&0xFF00FFFF)|0x00400000; // bits 23-21
 	NVIC_EN0_R |= (1<<6);          // enable interrupt 6 in NVIC
-}
-
-static void Initialize_Frame(unsigned char dest) {
-	register unsigned char i;
-	// initizlize the frame
-	for(i = 0; i < 30; ++i) {
-		frame[i] = 0;
-	}
-
-	frame[0] = FRAME_START;
-	frame[1] = 0;
-	frame[3] = 0x01;
-	frame[5] = 0;
-	frame[6] = dest;
 }
 
 void XBEE_configure(unsigned char destination, unsigned char myaddr) {
     char destination_low[5] = "DL00";
     char my_address[5]      = "MY00";
 
+    // FIXME: bug when nibble is 0xA-0xF
 	destination_low[2] += destination >> 4;
 	destination_low[3] += (destination & 0xF);
 	my_address[2] += myaddr >> 4;
@@ -181,121 +159,6 @@ void XBEE_configure(unsigned char destination, unsigned char myaddr) {
 	XBEE_command(destination_low); // DLxx
 	XBEE_command("DH0");
 	XBEE_command(my_address);      // MYxx
-	XBEE_command("AP1");
+	XBEE_command("AP0");
 	XBEE_command("CN");
-
-	Initialize_Frame(destination);
-}
-
-// Creates a frame out of the data and put it into a FIFO
-// The 7E header, API number and destination are already initialized
-void XBee_CreateTxFrame(char* data){
-	unsigned char i = 0;
-	unsigned short length = 5;
-	unsigned char static id = 1;
-	unsigned char sum;
-	while(*data){
-		DATA[i] = *data;
-		sum += *data;
-		++length;
-		++data;
-		++i;
-	}
-	
-	ID = id++;
-	id = (id==0)? 1: id;
-	LENGTH = length & 0x00FF;
-	DATA[i++] = 0xFF - sum; // Checksum at end of message
-	frame_len = length + 4;
-}
-
-// sends a frame to the XBee
-void XBee_SendTxFrame(void){
-	unsigned char i;
-	for(i = 0; i < frame_len; i++){
-    XBEE_OutChar(frame[i]);
-  }
-}
-
-// after sending out a frame, this function is called to verify
-// the success or failure of transmission.
-// returns 1 if success, 0 otherwise
-unsigned char XBee_TxStatus(void){
-	unsigned char i;
-	unsigned char character;
-
-	if(XBEE_InChar() != FRAME_START) return 0; // invalid frame start
-
-	for(i = 5; i > 0; --i){
-		character = XBEE_InChar();
-	} XBEE_InChar(); // ignore checksum
-
-	return (character == 0);
-}
-
-
-
-// return 0 if successful transmission; 1 if the checksum is incorrect
-unsigned char XBEE_ReceiveRxFrame(char *buf){
-	char character;
-	unsigned short length;
-	unsigned char sum = 0;
-	unsigned short i;
-	char *data = buf;
-
-	// Header
-	while(XBEE_InChar() != FRAME_START); // Wait until a proper head start
-
-							  // length
-	length = (XBEE_InChar())<<8;
-	length += (XBEE_InChar()) - 4;
-
-	// API, ID, Destination information are ignored
-	for(i=4; i != 0; --i) {
-		sum += XBEE_InChar();
-	}
-
-	character = XBEE_InChar();  // optional 0x00 does not affect sum
-	length -= 1;
-	if(character != 0x00){
-		*data = character;
-		++data;
-		sum += character;
-	}
-
-	while(length > 0){          // data
-		character = XBEE_InChar();
-		sum += character;
-		--length;
-
-		*data = character;
-		++data;
-	}
-								// Checksum
-	if(sum + XBEE_InChar() != 0xFF){
-		*buf++ = 'X';
-		*buf = '\0';
-		return 1;
-	} else {
-		*data = '\0';
-		return 0;
-	}
-}
-
-char static acknowledge_frame[7] = {0x7E, 0, 3, 0x89, 0, 0, 0};
-#define ACK_ID acknowledge_frame[4]
-#define ACK_RESULT acknowledge_frame[5]
-#define ACK_CHECKSUM acknowledge_frame[6]
-#define ACK_BASE_CHKSUM 0x78 // = 0xFF - 0x89
-
-void XBEE_SendAcknoledgeFrame(unsigned char acknowledge){
-	static char id = 0x01;
-	unsigned char i;
-	ACK_ID = id;
-	ACK_RESULT = acknowledge;
-	ACK_CHECKSUM = ACK_BASE_CHKSUM - id - acknowledge;
-
-	for(i = 0; i < 7; i++){
-		XBEE_OutChar(acknowledge_frame[i]);
-	}
 }

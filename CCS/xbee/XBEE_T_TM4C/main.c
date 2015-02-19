@@ -32,7 +32,6 @@ int main(void) {
 		UART_InString(buf, BUFFER_SIZE);
 		UART_NewLine(); 
 		
-		XBee_CreateTxFrame(buf);
-		XBee_SendTxFrame();
+		XBEE_OutString(buf);
 	}
 }

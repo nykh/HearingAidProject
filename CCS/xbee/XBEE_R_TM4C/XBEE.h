@@ -14,10 +14,8 @@
 
 void XBEE_Init();
 void XBEE_configure(unsigned char destination, unsigned char myaddr);
-void XBee_CreateTxFrame(char* data);
-void XBee_SendTxFrame(void);
-unsigned char XBee_TxStatus(void);
-unsigned char XBEE_ReceiveRxFrame(char *buf);
-void XBEE_SendAcknoledgeFrame(unsigned char acknoledge);
+
+void XBEE_OutString(const char* buf);
+void XBEE_InString(char* buf);
 
 #endif // __XBEE_H__

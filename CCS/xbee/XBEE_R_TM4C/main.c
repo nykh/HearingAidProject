@@ -27,7 +27,7 @@ int main(void) {
 	UART_OutString("XBEE initialization complete...\n\r");
 
 	for(;;){
-		while(XBEE_ReceiveRxFrame(buf));
+		XBEE_InString(buf);
 		UART_OutString(buf);
 		UART_NewLine();
 	}
