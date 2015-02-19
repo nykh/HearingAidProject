@@ -12,11 +12,13 @@
 #include "Time.h"
 #include "UART.h"
 #include "XBEE.h"
+#include "debug.h"
 
 int main(void) {
 #define BUFFER_SIZE 50
 	char buf[BUFFER_SIZE];
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+	_____debug_Init();
 	Time_Init();
 	UART_Init();
 	UART_OutString("UART initialization complete...\n\r");
@@ -25,6 +27,7 @@ int main(void) {
 	XBEE_configure(0x79, 0x69);
 
 	UART_OutString("XBEE initialization complete...\n\r");
+	_____debug_heartbeat();
 
 	for(;;){
 		XBEE_InString(buf);
