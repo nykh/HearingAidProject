@@ -24,8 +24,6 @@ int main(void) {
 	Time_Init();
 	UART_Init();
 	XBEE_Init();
-	XBEE_configure(0x69, 0x79);
-
 
 	for(;;){
 		UART_OutString("Instring: ");

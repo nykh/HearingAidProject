@@ -123,8 +123,8 @@ void XBEE_Init(void){
 	RxFifo_Init();                        // initialize empty FIFOs
 	TxFifo_Init();
 	UART1_CTL_R &= ~UART_CTL_UARTEN;      // disable UART
-	UART1_IBRD_R = 325;                   // IBRD = int(50,000,000 / (16 * 115,200)) = int(27.1267)
-	UART1_FBRD_R = 34;                    // FBRD = int(0.1267 * 64 + 0.5) = 8
+	UART1_IBRD_R = 27;                   // IBRD = int(50,000,000 / (16 * 115,200)) = int(27.1267)
+	UART1_FBRD_R = 8;                    // FBRD = int(0.1267 * 64 + 0.5) = 8
 										// 8 bit word length (no parity bits, one stop bit, FIFOs)
 	UART1_LCRH_R = (UART_LCRH_WLEN_8|UART_LCRH_FEN);
 	UART1_IFLS_R &= ~0x3F;                // clear TX and RX interrupt FIFO level fields
