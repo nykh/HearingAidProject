@@ -22,8 +22,7 @@
  http://users.ece.utexas.edu/~valvano/
  */
 #include <stdint.h>
-#include "tm4c123gh6pm.h"
-#include "DAC.h"
+#include "inc/tm4c123gh6pm.h"
 
 #define NVIC_EN0_INT17          0x00020000  // Interrupt 17 enable
 
@@ -268,7 +267,6 @@ void ADC0_InitTimer0ATriggerSeq3PD3(uint32_t period){
 void ADC0Seq3_Handler(void){
   ADC0_ISC_R = 0x08;          // acknowledge ADC sequence 3 completion
   ADCvalue = ADC0_SSFIFO3_R;  // 12-bit result
-	//DAC_Out(ADC0_SSFIFO3_R);
 	ADCflag=1;
 	
 }
