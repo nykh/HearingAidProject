@@ -40,8 +40,13 @@
 // SS3 1st sample source: programmable using variable 'channelNum' [0:11]
 // SS3 interrupts: enabled and promoted to controller
 // channelNum must be 0-11 (inclusive) corresponding to Ain0 through Ain11
+
+#if deprecated
 void ADC0_InitTimer0ATriggerSeq3(uint8_t channelNum, uint32_t period);
+#endif
+
 void ADC0_InitTimer0ATriggerSeq3PD3(uint32_t period);
+int ADC_Get(uint16_t *data);
 
 extern uint32_t ADCvalue;
 extern uint8_t ADCflag;

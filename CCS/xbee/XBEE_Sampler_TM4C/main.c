@@ -20,9 +20,6 @@ long StartCritical (void);    // previous I bit, disable interrupts
 void EndCritical(long sr);    // restore I bit to previous value
 void WaitForInterrupt(void);  // low power mode
 
-#define BUFFER_SIZE 30
-char static buf[BUFFER_SIZE];
-
 #define NICK_STYLE   3
 #define WEICE_STYLE  4
 #define FRAME_STYLE  NICK_STYLE
@@ -95,27 +92,27 @@ tuple decode_frame();
 #endif
 
 int main(void){
-	uint8_t kvalue;
-	uint8_t hundredvalue;
-	uint8_t tenvalue;
-	uint8_t unitvalue;
-	uint8_t kdigit;
-	uint8_t hundreddigit;
-	uint8_t tendigit;
-	uint8_t unitdigit;
-	uint32_t adc_normal;
-	uint16_t differ;
-	uint16_t temp;
-	uint16_t tempkvalue;
-	uint16_t temphundredvalue;
-	uint16_t temptenvalue;
-	uint16_t tempunitvalue;
-	uint8_t tempkdigit;
-	uint8_t temphundreddigit;
-	uint8_t temptendigit;
-	uint8_t tempunitdigit;
-	uint8_t xvalue = 0;
-	uint8_t yvalue1 = 0;
+//	uint8_t kvalue;
+//	uint8_t hundredvalue;
+//	uint8_t tenvalue;
+//	uint8_t unitvalue;
+//	uint8_t kdigit;
+//	uint8_t hundreddigit;
+//	uint8_t tendigit;
+//	uint8_t unitdigit;
+//	uint32_t adc_normal;
+//	uint16_t differ;
+//	uint16_t temp;
+//	uint16_t tempkvalue;
+//	uint16_t temphundredvalue;
+//	uint16_t temptenvalue;
+//	uint16_t tempunitvalue;
+//	uint8_t tempkdigit;
+//	uint8_t temphundreddigit;
+//	uint8_t temptendigit;
+//	uint8_t tempunitdigit;
+//	uint8_t xvalue = 0;
+//	uint8_t yvalue1 = 0;
 
 	uint16_t first_Sample, second_Sample;
 
@@ -129,7 +126,7 @@ int main(void){
 	//add from nick
 
 	ST7735_InitR(INITR_REDTAB);	//initialize the screen
-	ADC0_InitTimer0ATriggerSeq3PD3(5000000);	//*****ADC channel 4, 10Hz sampling
+	ADC0_InitTimer0ATriggerSeq3PD3(50000);  //*****ADC channel 4, 1.6kHz sampling
 	_____debug_heartbeat();
 
 	EnableInterrupts();
@@ -138,20 +135,14 @@ int main(void){
 	while(1){
 		frame f;
 
-		while(!ADCflag);
-		ADCflag=0;
-			first_Sample = ADCvalue;
-
-		while(!ADCflag);
-		ADCflag=0;
-			second_Sample = ADCvalue;
-
+		while(!ADC_Get(&first_Sample));
+		while(!ADC_Get(&second_Sample));
 		f = encode_frame(&first_Sample, &second_Sample);
 		XBEE_OutString(f.array);
 
 
 		// old code:
-
+/*
 		if(ADCflag){
 
 			kvalue =  ADCvalue/1000;
@@ -211,4 +202,5 @@ int main(void){
 			}
 		}
 	}
+*/
 }
