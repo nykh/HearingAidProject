@@ -234,10 +234,16 @@ void ADC0_InitTimer0ATriggerSeq3PD3(uint32_t period){ volatile uint32_t delay;
   EnableInterrupts();           // 13) enable interrupts
 }
 
+void ADC_Fifo_Full_Handler(void) {
+	for(;;);
+}
+
 //volatile uint32_t ADCvalue;
 void ADC0Seq3_Handler(void){
   ADC0_ISC_R = ADC_ISC_IN3;         // acknowledge ADC sequence 3 completion
-  while(!ADCFifo_Put(ADC0_SSFIFO3_R));
+  if(!ADCFifo_Put(ADC0_SSFIFO3_R))
+	  ADC_Fifo_Full_Handler();
 }
 
 int (*ADC_Get) (uint16_t *databuf) = ADCFifo_Get;
+
