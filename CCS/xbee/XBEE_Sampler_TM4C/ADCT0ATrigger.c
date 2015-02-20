@@ -24,6 +24,7 @@
 #include <stdint.h>
 #include "inc/tm4c123gh6pm.h"
 #include "FIFO.h"
+#include "debug.h"
 
 #define ADC_FIFO_SIZE  8
 AddIndexFifo(ADC, 8, uint16_t, 1, 0)
@@ -235,6 +236,7 @@ void ADC0_InitTimer0ATriggerSeq3PD3(uint32_t period){ volatile uint32_t delay;
 }
 
 void ADC_Fifo_Full_Handler(void) {
+	_____debug_heartbeat(); // off
 	for(;;);
 }
 
