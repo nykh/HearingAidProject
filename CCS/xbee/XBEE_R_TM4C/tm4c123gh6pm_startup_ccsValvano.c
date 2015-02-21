@@ -26,6 +26,14 @@
 
 //*****************************************************************************
 //
+// Adapted for TM4C123GXL
+// 2015/2/20
+// Nicholas Huang, Yu Wang
+// 
+//*****************************************************************************
+
+//*****************************************************************************
+//
 // Forward declaration of the default fault handlers.
 //
 //*****************************************************************************
@@ -189,9 +197,9 @@ void (* const g_pfnVectors[])(void) =
     PWM0Gen2_Handler,           // 28  PWM Generator 2
     Quadrature0_Handler,        // 29  Quadrature Encoder 0
     ADC0Seq0_Handler,           // 30  ADC Sequence 0
-    ADC1Seq1_Handler,           // 31  ADC Sequence 1
-    ADC1Seq2_Handler,           // 32  ADC Sequence 2
-    ADC1Seq3_Handler,           // 33  ADC Sequence 3
+    ADC0Seq1_Handler,           // 31  ADC Sequence 1
+    ADC0Seq2_Handler,           // 32  ADC Sequence 2
+    ADC0Seq3_Handler,           // 33  ADC Sequence 3
     WDT_Handler,                // 34  Watchdog timer
     Timer0A_Handler,            // 35  Timer 0 subtimer A
     Timer0B_Handler,            // 36  Timer 0 subtimer B
@@ -201,7 +209,7 @@ void (* const g_pfnVectors[])(void) =
     Timer2B_Handler,            // 40  Timer 2 subtimer B
     Comp0_Handler,              // 41  Analog Comparator 0
     Comp1_Handler,              // 42  Analog Comparator 1
-    Comp2_Handler,              // 43  Analog Comparator 2
+    0,                          // 43  Reserved
     SysCtl_Handler,             // 44  System Control (PLL, OSC, BO)
     FlashCtl_Handler,           // 45  FLASH Control
     GPIOPortF_Handler,          // 46  GPIO Port F
@@ -403,10 +411,10 @@ void PWM0Gen0_Handler          (void){ while(1);}
 void PWM0Gen1_Handler          (void){ while(1);}
 void PWM0Gen2_Handler          (void){ while(1);}
 void Quadrature0_Handler       (void){ while(1);}
-void ADC0_Handler              (void){ while(1);}
-void ADC1_Handler              (void){ while(1);}
-void ADC2_Handler              (void){ while(1);}
-void ADC3_Handler              (void){ while(1);}
+void ADC0Seq0_Handler          (void){ while(1);}
+void ADC0Seq1_Handler          (void){ while(1);}
+void ADC0Seq2_Handler          (void){ while(1);}
+void ADC0Seq3_Handler          (void){ while(1);}
 void WDT_Handler               (void){ while(1);}
 void Timer0A_Handler	       (void){ while(1);}
 void Timer0B_Handler	       (void){ while(1);}
@@ -416,7 +424,6 @@ void Timer2A_Handler	       (void){ while(1);}
 void Timer2B_Handler	       (void){ while(1);}
 void Comp0_Handler             (void){ while(1);}
 void Comp1_Handler             (void){ while(1);}
-void Comp2_Handler             (void){ while(1);}
 void SysCtl_Handle             (void){ while(1);}
 void FlashCtl_Handler	       (void){ while(1);}
 void GPIOPortF_Handler	       (void){ while(1);}
