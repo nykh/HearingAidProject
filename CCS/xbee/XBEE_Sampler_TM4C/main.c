@@ -140,7 +140,7 @@ int main(void){
 	ST7735_InitR(INITR_REDTAB);	//initialize the screen
 #endif
 
-	ADC0_InitTimer0ATriggerSeq3PD3(50000);  //*****ADC channel 4, 1 kHz sampling
+	ADC0_InitTimer0ATriggerSeq3PD3(3125);  //*****ADC channel 4, 1 kHz sampling
 	_____debug_heartbeat(); // on
 
 	EnableInterrupts();
