@@ -131,15 +131,20 @@ int main(void){
 	Time_Init();
 	_____debug_Init();
 	XBEE_Init();
+
+	EnableInterrupts();
 	XBEE_configure(0x69, 0x79);
+	DisableInterrupts();
 
 #if screen
 	ST7735_InitR(INITR_REDTAB);	//initialize the screen
 #endif
+
 	ADC0_InitTimer0ATriggerSeq3PD3(50000);  //*****ADC channel 4, 1 kHz sampling
 	_____debug_heartbeat(); // on
 
 	EnableInterrupts();
+
 
 
 	while(1){
@@ -149,8 +154,8 @@ int main(void){
 		char frame[4];
 #endif
 
-		while(!ADC_Get(&first_Sample));
-		while(!ADC_Get(&second_Sample));
+		ADC_Get(&first_Sample);
+		ADC_Get(&second_Sample);
 
 #if FRAME_STYLE == NICK_STYLE
 		f = encode_frame(&first_Sample, &second_Sample);

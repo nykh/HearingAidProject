@@ -46,7 +46,7 @@ void ADC0_InitTimer0ATriggerSeq3(uint8_t channelNum, uint32_t period);
 #endif
 
 void ADC0_InitTimer0ATriggerSeq3PD3(uint32_t period);
-int ADC_Get(uint16_t *data);
+void ADC_Get(uint16_t *data);
 
 extern uint32_t ADCvalue;
 extern uint8_t ADCflag;

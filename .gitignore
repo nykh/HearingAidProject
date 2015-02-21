@@ -71,7 +71,4 @@ targetConfigs/
 ##########################
 
 examples/
-blinky/
-qs-rgb/
-uart_echo/
 
