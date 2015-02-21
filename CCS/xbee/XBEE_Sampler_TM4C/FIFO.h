@@ -31,46 +31,6 @@
 long StartCritical (void);    // previous I bit, disable interrupts
 void EndCritical(long sr);    // restore I bit to previous value
 
-// Two-index implementation of the transmit FIFO
-// can hold 0 to TXFIFOSIZE elements
-#define TXFIFOSIZE 16 // must be a power of 2
-#define TXFIFOSUCCESS 1
-#define TXFIFOFAIL    0
-
-typedef char txDataType;
-
-// initialize index FIFO
-void TxFifo_Init(void);
-// add element to end of index FIFO
-// return TXFIFOSUCCESS if successful
-int TxFifo_Put(txDataType data);
-// remove element from front of index FIFO
-// return TXFIFOSUCCESS if successful
-int TxFifo_Get(txDataType *datapt);
-// number of elements in index FIFO
-// 0 to TXFIFOSIZE-1
-unsigned short TxFifo_Size(void);
-
-// Two-pointer implementation of the receive FIFO
-// can hold 0 to RXFIFOSIZE-1 elements
-#define RXFIFOSIZE 10 // can be any size
-#define RXFIFOSUCCESS 1
-#define RXFIFOFAIL    0
-
-typedef char rxDataType;
-
-// initialize pointer FIFO
-void RxFifo_Init(void);
-// add element to end of pointer FIFO
-// return RXFIFOSUCCESS if successful
-int RxFifo_Put(rxDataType data);
-// remove element from front of pointer FIFO
-// return RXFIFOSUCCESS if successful
-int RxFifo_Get(rxDataType *datapt);
-// number of elements in pointer FIFO
-// 0 to RXFIFOSIZE-1
-unsigned short RxFifo_Size(void);
-
 // macro to create an index FIFO
 #define AddIndexFifo(NAME,SIZE,TYPE,SUCCESS,FAIL) \
 unsigned long volatile NAME ## PutI;    \

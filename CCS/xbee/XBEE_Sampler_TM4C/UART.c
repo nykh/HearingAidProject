@@ -56,8 +56,8 @@ AddIndexFifo(UART0Tx, FIFOSIZE, char, FIFOSUCCESS, FIFOFAIL)
 void UART_Init(void){
 	SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R0; // activate UART0
 	SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R0; // activate port A
-  RxFifo_Init();                        // initialize empty FIFOs
-  TxFifo_Init();
+	UART0RxFifo_Init();                        // initialize empty FIFOs
+	UART0TxFifo_Init();
   UART0_CTL_R &= ~UART_CTL_UARTEN;      // disable UART
   UART0_IBRD_R = 27;                    // IBRD = int(50,000,000 / (16 * 115,200)) = int(27.1267)
   UART0_FBRD_R = 8;                     // FBRD = int(0.1267 * 64 + 0.5) = 8

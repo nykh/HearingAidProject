@@ -5,6 +5,14 @@
 #include "FIFO.h"
 #include "Time.h"
 
+#define TXFIFOSIZE  16
+#define RXFIFOSIZE  8
+#define FIFOSUCCESS 1         // return value on success
+#define FIFOFAIL    0         // return value on failure
+                              // create index implementation FIFO (see FIFO.h)
+AddIndexFifo(XBEERx, RXFIFOSIZE, char, FIFOSUCCESS, FIFOFAIL)
+AddIndexFifo(XBEETx, TXFIFOSIZE, char, FIFOSUCCESS, FIFOFAIL)
+
 void EnableInterrupts(void);  // Enable interrupts
 #define SHORT_WAIT() \
 	do{ Time_Wait10ms(50); XBEE_WaitForResponse(); }  \
@@ -14,9 +22,9 @@ void EnableInterrupts(void);  // Enable interrupts
 // stop when hardware RX FIFO is empty or software RX FIFO is full
 void static copyHardwareToSoftware(void){
   char letter;
-  while(((UART1_FR_R&UART_FR_RXFE) == 0) && (RxFifo_Size() < (RXFIFOSIZE - 1))){
+  while(((UART1_FR_R&UART_FR_RXFE) == 0) && (XBEERxFifo_Size() < (RXFIFOSIZE - 1))){
     letter = UART1_DR_R;
-    RxFifo_Put(letter);
+    XBEERxFifo_Put(letter);
   }
 }
 
@@ -24,8 +32,8 @@ void static copyHardwareToSoftware(void){
 // stop when software TX FIFO is empty or hardware TX FIFO is full
 void static copySoftwareToHardware(void){
   char letter;
-  while(((UART1_FR_R&UART_FR_TXFF) == 0) && (TxFifo_Size() > 0)){
-    TxFifo_Get(&letter);
+  while(((UART1_FR_R&UART_FR_TXFF) == 0) && (XBEETxFifo_Size() > 0)){
+	XBEETxFifo_Get(&letter);
     UART1_DR_R = letter;
   }
 }
@@ -34,14 +42,14 @@ void static copySoftwareToHardware(void){
 // spin if RxFifo is empty
 unsigned char static XBEE_InChar(void){
   char letter;
-  while(RxFifo_Get(&letter) == RXFIFOFAIL){};
+  while(XBEERxFifo_Get(&letter) == FIFOFAIL){};
   return(letter);
 }
 
 // output ASCII character to UART
 // spin if TxFifo is full
 void static XBEE_OutChar(unsigned char data){
-  while(TxFifo_Put(data) == TXFIFOFAIL){};
+  while(XBEETxFifo_Put(data) == FIFOFAIL){};
   UART1_IM_R &= ~UART_IM_TXIM;          // disable TX FIFO interrupt
   copySoftwareToHardware();
   UART1_IM_R |= UART_IM_TXIM;           // enable TX FIFO interrupt
@@ -57,7 +65,7 @@ void UART1_Handler(void){
     UART1_ICR_R = UART_ICR_TXIC;        // acknowledge TX FIFO
     // copy from software TX FIFO to hardware TX FIFO
     copySoftwareToHardware();
-    if(TxFifo_Size() == 0){             // software TX FIFO is empty
+    if(XBEETxFifo_Size() == 0){             // software TX FIFO is empty
       UART1_IM_R &= ~UART_IM_TXIM;      // disable TX FIFO interrupt
     }
   }
@@ -95,9 +103,9 @@ void XBEE_InString(char *buf) {
 
 void static XBEE_WaitForXBeeOK(void) {
 	char letter;
-	while(RxFifo_Get(&letter) == RXFIFOFAIL && letter != 'O');
-	while(RxFifo_Get(&letter) == RXFIFOFAIL && letter != 'K');
-	while(RxFifo_Get(&letter) == RXFIFOFAIL && letter != CR);
+	while(XBEERxFifo_Get(&letter) == FIFOFAIL && letter != 'O');
+	while(XBEERxFifo_Get(&letter) == FIFOFAIL && letter != 'K');
+	while(XBEERxFifo_Get(&letter) == FIFOFAIL && letter != CR);
 }
 
 void static XBEE_command(const char *cmd) {
@@ -120,11 +128,11 @@ void static XBEE_enter_command_mode(void) {
 void XBEE_Init(void){
 	SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R1; // activate UART1
 	SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R1; // activate port B
-	RxFifo_Init();                        // initialize empty FIFOs
-	TxFifo_Init();
+	XBEERxFifo_Init();                        // initialize empty FIFOs
+	XBEETxFifo_Init();
 	UART1_CTL_R &= ~UART_CTL_UARTEN;      // disable UART
-	UART1_IBRD_R = 325;                   // IBRD = int(50,000,000 / (16 * 115,200)) = int(27.1267)
-	UART1_FBRD_R = 34;                    // FBRD = int(0.1267 * 64 + 0.5) = 8
+	UART1_IBRD_R = 27;                   // IBRD = int(50,000,000 / (16 * 115,200)) = int(27.1267)
+	UART1_FBRD_R = 8;                    // FBRD = int(0.1267 * 64 + 0.5) = 8
 										// 8 bit word length (no parity bits, one stop bit, FIFOs)
 	UART1_LCRH_R = (UART_LCRH_WLEN_8|UART_LCRH_FEN);
 	UART1_IFLS_R &= ~0x3F;                // clear TX and RX interrupt FIFO level fields

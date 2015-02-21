@@ -24,7 +24,7 @@ void WaitForInterrupt(void);  // low power mode
 
 #define NICK_STYLE   3
 #define WEICE_STYLE  4
-#define FRAME_STYLE  WEICE_STYLE
+#define FRAME_STYLE  NICK_STYLE
 
 #if FRAME_STYLE == NICK_STYLE
 
@@ -125,19 +125,18 @@ int main(void){
 
 	uint16_t first_Sample, second_Sample;
 
-	//add from nick
-	SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL |SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
+	// 50 MHz
+	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL
+			     | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 	Time_Init();
-	//UART_Init();
+	_____debug_Init();
 	XBEE_Init();
 	XBEE_configure(0x69, 0x79);
-	_____debug_Init();
-	//add from nick
 
 #if screen
 	ST7735_InitR(INITR_REDTAB);	//initialize the screen
 #endif
-	ADC0_InitTimer0ATriggerSeq3PD3(50000);  //*****ADC channel 4, 1.6kHz sampling
+	ADC0_InitTimer0ATriggerSeq3PD3(50000);  //*****ADC channel 4, 1 kHz sampling
 	_____debug_heartbeat(); // on
 
 	EnableInterrupts();
@@ -221,7 +220,6 @@ int main(void){
 				//ST7735_DrawPixel(xvalue, yvalue2, ST7735_Color565(255, 255, 255));
 			}
 		}
-	}
-
 #endif
+	}
 }

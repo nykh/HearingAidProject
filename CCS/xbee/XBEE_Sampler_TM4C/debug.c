@@ -20,6 +20,7 @@
 void _____debug_Init(void) {
 	ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
 	ROM_GPIOPinTypeGPIOOutput(GPIO_PORTF_BASE, GPIO_PIN_1);
+	GPIO_PORTF_DATA_R &=~GPIO_PIN_1;
 }
 
 void _____debug_heartbeat(void) {
