@@ -7,7 +7,6 @@
 #include "inc/hw_types.h"
 #include "driverlib/sysctl.h"
 #include "Time.h"
-#include "UART.h"
 #include "XBEE.h"
 #include "debug.h"
 
