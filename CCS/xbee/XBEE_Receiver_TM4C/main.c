@@ -155,7 +155,7 @@ int main(void){
 		for(;;){
 				XBEE_InString(buf);
                 frame f;
-				char *d= "\n";
+				const uint8_t *d= "\n";
                 strncpy(f.array,buf,3);//copy from buf to frame array
 				t=decode_frame(f);//decode
 

@@ -416,7 +416,7 @@ void ST7735_OutChar(uint8_t ch);
 // The string will not automatically wrap.
 // inputs: ptr  pointer to NULL-terminated ASCII string
 // outputs: none
-void ST7735_OutString(uint8_t *ptr);
+void ST7735_OutString(const uint8_t *ptr);
 
 // ************** ST7735_SetTextColor ************************
 // Sets the color in which the characters will be printed 
