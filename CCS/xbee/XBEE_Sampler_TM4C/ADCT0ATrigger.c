@@ -235,6 +235,7 @@ void ADC0_InitTimer0ATriggerSeq3PD3(uint32_t period){ volatile uint32_t delay;
 
 void ADC_Fifo_Full_Handler(void) {
 	_____debug_heartbeat(); // off
+	ADC0_IM_R &=~ 0x08;
 	for(;;);
 }
 

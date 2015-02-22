@@ -131,15 +131,11 @@ int main(void){
 	_____debug_Init();
 	XBEE_Init();
 
-	EnableInterrupts();
-	XBEE_configure(0x69, 0x79);
-	DisableInterrupts();
-
 #if screen
 	ST7735_InitR(INITR_REDTAB);	//initialize the screen
 #endif
 
-	ADC0_InitTimer0ATriggerSeq3PD3(3125);  //*****ADC channel 4, 1 kHz sampling
+	ADC0_InitTimer0ATriggerSeq3PD3(10000);  //*****ADC channel 4, 1 kHz sampling
 	_____debug_heartbeat(); // on
 
 	EnableInterrupts();

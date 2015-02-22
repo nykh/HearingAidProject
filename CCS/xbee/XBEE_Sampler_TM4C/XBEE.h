@@ -13,7 +13,6 @@
 #define DEL  0x7F
 
 void XBEE_Init();
-void XBEE_configure(unsigned char destination, unsigned char myaddr);
 
 void XBEE_OutString(const char* buf);
 void XBEE_InString(char* buf);
