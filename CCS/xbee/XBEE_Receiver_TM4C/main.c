@@ -11,7 +11,7 @@
 #include "XBEE.h"
 #include "debug.h"
 
-#include "ADCT0ATrigger.h"
+
 #if screen
 #include "ST7735.h"
 #endif
@@ -98,7 +98,8 @@ tuple decode_frame(char *f) {
 #endif
 
 int main(void){
-
+#define BUFFER_SIZE 50
+	char buf[BUFFER_SIZE];
 #if screen
 	uint8_t kvalue;
 	uint8_t hundredvalue;
@@ -123,7 +124,7 @@ int main(void){
 	uint8_t yvalue1 = 0;
 #endif
 
-	uint16_t first_Sample, second_Sample;
+
 
 	// 50 MHz
 	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL
@@ -133,33 +134,38 @@ int main(void){
 	XBEE_Init();
 
 	EnableInterrupts();
-	XBEE_configure(0x69, 0x79);
+	XBEE_configure(0x79, 0x69);//receiver should be 79,69, right?
 	DisableInterrupts();
 
 #if screen
 	ST7735_InitR(INITR_REDTAB);	//initialize the screen
 #endif
 
-	ADC0_InitTimer0ATriggerSeq3PD3(3125);  //*****ADC channel 4, 1 kHz sampling
+
 	_____debug_heartbeat(); // on
 
 	EnableInterrupts();
 
-
+    tuple t; //the received tuple
 
 	while(1){
 #if FRAME_STYLE == NICK_STYLE
-		frame f;
+		for(;;){
+				XBEE_InString(buf);
+
+				t=decode_frame((frame) buf);
+
+				UART_OutString(buf);
+				UART_NewLine();
+			}
 #else
 		char frame[4];
 #endif
 
-		ADC_Get(&first_Sample);
-		ADC_Get(&second_Sample);
+
 
 #if FRAME_STYLE == NICK_STYLE
-		f = encode_frame(&first_Sample, &second_Sample);
-		XBEE_OutString(f.array);
+
 #else
 		encode_frame(first_Sample, second_Sample, frame);
 		XBEE_OutString(frame);
