@@ -10,8 +10,9 @@
 #include "UART.h"
 #include "XBEE.h"
 #include "debug.h"
+#include <string.h>
 
-
+#define screen 1
 #if screen
 #include "ST7735.h"
 #endif
@@ -101,27 +102,27 @@ int main(void){
 #define BUFFER_SIZE 50
 	char buf[BUFFER_SIZE];
 #if screen
-	uint8_t kvalue;
-	uint8_t hundredvalue;
-	uint8_t tenvalue;
-	uint8_t unitvalue;
-	uint8_t kdigit;
-	uint8_t hundreddigit;
-	uint8_t tendigit;
-	uint8_t unitdigit;
-	uint32_t adc_normal;
-	uint16_t differ;
-	uint16_t temp;
-	uint16_t tempkvalue;
-	uint16_t temphundredvalue;
-	uint16_t temptenvalue;
-	uint16_t tempunitvalue;
-	uint8_t tempkdigit;
-	uint8_t temphundreddigit;
-	uint8_t temptendigit;
-	uint8_t tempunitdigit;
-	uint8_t xvalue = 0;
-	uint8_t yvalue1 = 0;
+//	uint8_t kvalue;
+//	uint8_t hundredvalue;
+//	uint8_t tenvalue;
+//	uint8_t unitvalue;
+//	uint8_t kdigit;
+//	uint8_t hundreddigit;
+//	uint8_t tendigit;
+//	uint8_t unitdigit;
+//	uint32_t adc_normal;
+//	uint16_t differ;
+//	uint16_t temp;
+//	uint16_t tempkvalue;
+//	uint16_t temphundredvalue;
+//	uint16_t temptenvalue;
+//	uint16_t tempunitvalue;
+//	uint8_t tempkdigit;
+//	uint8_t temphundreddigit;
+//	uint8_t temptendigit;
+//	uint8_t tempunitdigit;
+//	uint8_t xvalue = 0;
+//	uint8_t yvalue1 = 0;
 #endif
 
 
@@ -132,9 +133,10 @@ int main(void){
 	Time_Init();
 	_____debug_Init();
 	XBEE_Init();
+    UART_Init();
 
-	EnableInterrupts();
-	XBEE_configure(0x79, 0x69);//receiver should be 79,69, right?
+    EnableInterrupts();
+
 	DisableInterrupts();
 
 #if screen
@@ -152,10 +154,15 @@ int main(void){
 #if FRAME_STYLE == NICK_STYLE
 		for(;;){
 				XBEE_InString(buf);
+                frame f;
+				char *d= "\n";
+                strncpy(f.array,buf,3);//copy from buf to frame array
+				t=decode_frame(f);//decode
 
-				t=decode_frame((frame) buf);
-
-				UART_OutString(buf);
+                ST7735_OutUDec(t.odd);
+                ST7735_OutUDec(t.even);
+                ST7735_OutString(d);
+                UART_OutString(buf);
 				UART_NewLine();
 			}
 #else
@@ -173,64 +180,64 @@ int main(void){
 
 
 #if screen
-		if(ADCflag){
-
-			kvalue =  ADCvalue/1000;
-			hundredvalue = (ADCvalue - kvalue*1000)/100;
-			tenvalue = (ADCvalue - kvalue*1000 - hundredvalue*100)/10;
-			unitvalue = ADCvalue - kvalue*1000 - hundredvalue*100 - tenvalue*10;
-
-			//add from nick
-
-			//add from nick
-
-			kdigit = '0' +  kvalue;
-			hundreddigit = '0' +  hundredvalue;
-			tendigit = '0' + tenvalue;
-			unitdigit = '0' + unitvalue;
-
-			ST7735_DrawChar(10, 10, kdigit, ST7735_Color565(255, 128, 128), 0, 1);
-			ST7735_DrawChar(17, 10, hundreddigit, ST7735_Color565(255, 128, 128), 0, 1);
-			ST7735_DrawChar(24, 10, tendigit, ST7735_Color565(255, 128, 128), 0, 1);
-			ST7735_DrawChar(34, 10, unitdigit, ST7735_Color565(255, 128, 128), 0, 1);
-
-			adc_normal = ADCvalue*1000;
-			differ = adc_normal/1638;
-			temp = 4000 - differ;
-			tempkvalue = temp/1000;
-			temphundredvalue = (temp - tempkvalue*1000)/100;
-			temptenvalue = (temp - tempkvalue*1000 - temphundredvalue*100)/10;
-			tempunitvalue = temp - tempkvalue*1000 - temphundredvalue*100 - temptenvalue*10;
-		
-			tempkdigit = '0' + tempkvalue;
-			temphundreddigit = '0' + temphundredvalue;
-			temptendigit = '0' + temptenvalue;
-			tempunitdigit = '0' + tempunitvalue;
-
-			ST7735_DrawChar(10, 30, tempkdigit, ST7735_Color565(255, 128, 128), 0, 1);
-			ST7735_DrawChar(17, 30, temphundreddigit, ST7735_Color565(255, 128, 128), 0, 1);
-			ST7735_DrawChar(24, 30, '.', ST7735_Color565(255, 128, 128), 0, 1);
-			ST7735_DrawChar(31, 30, temptendigit, ST7735_Color565(255, 128, 128), 0, 1);
-			ST7735_DrawChar(38, 30, tempunitdigit, ST7735_Color565(255, 128, 128), 0, 1);
-			ST7735_DrawChar(45, 30, 'C', ST7735_Color565(255, 128, 128), 0, 1);
-
-
-			if(xvalue < 127){
-				yvalue1 = 150-(temp/100);
-				//yvalue2 = 150-Desirespeed;
-				ST7735_FillRect(xvalue, 90, 1, 70, ST7735_Color565(0, 0, 0));
-				ST7735_DrawPixel(xvalue, yvalue1, ST7735_Color565(255, 128, 128));
-				//ST7735_DrawPixel(xvalue, yvalue2, ST7735_Color565(255, 255, 255));
-				xvalue++;
-			}else{
-				xvalue = 0;
-				yvalue1 = 150-(temp/100);
-				//yvalue2 = 150-Desirespeed;
-				ST7735_FillRect(xvalue, 90, 1, 70, ST7735_Color565(0, 0, 0));
-				ST7735_DrawPixel(xvalue, yvalue1, ST7735_Color565(255, 128, 128));
-				//ST7735_DrawPixel(xvalue, yvalue2, ST7735_Color565(255, 255, 255));
-			}
-		}
+//		if(ADCflag){
+//
+//			kvalue =  ADCvalue/1000;
+//			hundredvalue = (ADCvalue - kvalue*1000)/100;
+//			tenvalue = (ADCvalue - kvalue*1000 - hundredvalue*100)/10;
+//			unitvalue = ADCvalue - kvalue*1000 - hundredvalue*100 - tenvalue*10;
+//
+//			//add from nick
+//
+//			//add from nick
+//
+//			kdigit = '0' +  kvalue;
+//			hundreddigit = '0' +  hundredvalue;
+//			tendigit = '0' + tenvalue;
+//			unitdigit = '0' + unitvalue;
+//
+//			ST7735_DrawChar(10, 10, kdigit, ST7735_Color565(255, 128, 128), 0, 1);
+//			ST7735_DrawChar(17, 10, hundreddigit, ST7735_Color565(255, 128, 128), 0, 1);
+//			ST7735_DrawChar(24, 10, tendigit, ST7735_Color565(255, 128, 128), 0, 1);
+//			ST7735_DrawChar(34, 10, unitdigit, ST7735_Color565(255, 128, 128), 0, 1);
+//
+//			adc_normal = ADCvalue*1000;
+//			differ = adc_normal/1638;
+//			temp = 4000 - differ;
+//			tempkvalue = temp/1000;
+//			temphundredvalue = (temp - tempkvalue*1000)/100;
+//			temptenvalue = (temp - tempkvalue*1000 - temphundredvalue*100)/10;
+//			tempunitvalue = temp - tempkvalue*1000 - temphundredvalue*100 - temptenvalue*10;
+//
+//			tempkdigit = '0' + tempkvalue;
+//			temphundreddigit = '0' + temphundredvalue;
+//			temptendigit = '0' + temptenvalue;
+//			tempunitdigit = '0' + tempunitvalue;
+//
+//			ST7735_DrawChar(10, 30, tempkdigit, ST7735_Color565(255, 128, 128), 0, 1);
+//			ST7735_DrawChar(17, 30, temphundreddigit, ST7735_Color565(255, 128, 128), 0, 1);
+//			ST7735_DrawChar(24, 30, '.', ST7735_Color565(255, 128, 128), 0, 1);
+//			ST7735_DrawChar(31, 30, temptendigit, ST7735_Color565(255, 128, 128), 0, 1);
+//			ST7735_DrawChar(38, 30, tempunitdigit, ST7735_Color565(255, 128, 128), 0, 1);
+//			ST7735_DrawChar(45, 30, 'C', ST7735_Color565(255, 128, 128), 0, 1);
+//
+//
+//			if(xvalue < 127){
+//				yvalue1 = 150-(temp/100);
+//				//yvalue2 = 150-Desirespeed;
+//				ST7735_FillRect(xvalue, 90, 1, 70, ST7735_Color565(0, 0, 0));
+//				ST7735_DrawPixel(xvalue, yvalue1, ST7735_Color565(255, 128, 128));
+//				//ST7735_DrawPixel(xvalue, yvalue2, ST7735_Color565(255, 255, 255));
+//				xvalue++;
+//			}else{
+//				xvalue = 0;
+//				yvalue1 = 150-(temp/100);
+//				//yvalue2 = 150-Desirespeed;
+//				ST7735_FillRect(xvalue, 90, 1, 70, ST7735_Color565(0, 0, 0));
+//				ST7735_DrawPixel(xvalue, yvalue1, ST7735_Color565(255, 128, 128));
+//				//ST7735_DrawPixel(xvalue, yvalue2, ST7735_Color565(255, 255, 255));
+//			}
+//		}
 #endif
 	}
 }
