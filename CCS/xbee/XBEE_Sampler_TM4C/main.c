@@ -125,7 +125,7 @@ int main(void){
 	uint16_t first_Sample, second_Sample;
 
 	// 50 MHz
-	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL
+	SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL
 			     | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 	Time_Init();
 	_____debug_Init();
@@ -135,7 +135,7 @@ int main(void){
 	ST7735_InitR(INITR_REDTAB);	//initialize the screen
 #endif
 
-	ADC0_InitTimer0ATriggerSeq3PD3(10000);  //*****ADC channel 4, 1 kHz sampling
+	ADC0_InitTimer0ATriggerSeq3PD3(14000);  //*****ADC channel 4, 1 kHz sampling
 	_____debug_heartbeat(); // on
 
 	EnableInterrupts();
