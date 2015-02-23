@@ -99,7 +99,7 @@ tuple decode_frame(char *f) {
 #endif
 
 int main(void){
-#define BUFFER_SIZE 50
+#define BUFFER_SIZE 10
 	char buf[BUFFER_SIZE];
 #if screen
 //	uint8_t kvalue;
@@ -187,7 +187,6 @@ int main(void){
                 				xvalue++;
                 			}
                 UART_OutString(buf);
-				UART_NewLine();
 			}
 #else
 		char frame[4];
