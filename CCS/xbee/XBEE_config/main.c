@@ -24,7 +24,7 @@ int main(void) { volatile unsigned long dummy;
 	XBEE_Init();
 	_____debug_heartbeat(); // off
 	EnableInterrupts();
-	XBEE_config("79", "69");
+	XBEE_config("69", "79");
 	_____debug_heartbeat(); // on
 
 

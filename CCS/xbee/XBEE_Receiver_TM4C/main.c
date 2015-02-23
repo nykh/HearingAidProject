@@ -128,7 +128,7 @@ int main(void){
 
 
 	// 50 MHz
-	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL
+	SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL
 			     | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 	Time_Init();
 	_____debug_Init();
@@ -144,7 +144,7 @@ int main(void){
 #endif
 
 
-	_____debug_heartbeat(); // on
+//	_____debug_heartbeat(); // on
 
 	EnableInterrupts();
 
@@ -154,7 +154,8 @@ int main(void){
 #if FRAME_STYLE == NICK_STYLE
 		for(;;){
 				XBEE_InString(buf);
-                frame f;
+				_____debug_heartbeat(); // on
+				frame f;
 				const uint8_t *d= "\n";
                 strncpy(f.array,buf,3);//copy from buf to frame array
 				t=decode_frame(f);//decode
