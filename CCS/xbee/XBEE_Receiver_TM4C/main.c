@@ -112,7 +112,7 @@ int main(void){
 //	uint8_t unitdigit;
 //	uint32_t adc_normal;
 //	uint16_t differ;
-//	uint16_t temp;
+	uint16_t temp;
 //	uint16_t tempkvalue;
 //	uint16_t temphundredvalue;
 //	uint16_t temptenvalue;
@@ -121,14 +121,14 @@ int main(void){
 //	uint8_t temphundreddigit;
 //	uint8_t temptendigit;
 //	uint8_t tempunitdigit;
-//	uint8_t xvalue = 0;
-//	uint8_t yvalue1 = 0;
+	uint8_t xvalue = 0;
+	uint8_t yvalue1 = 0;
 #endif
 
 
 
 	// 50 MHz
-	SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL
+	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL
 			     | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 	Time_Init();
 	_____debug_Init();
@@ -160,9 +160,32 @@ int main(void){
                 strncpy(f.array,buf,3);//copy from buf to frame array
 				t=decode_frame(f);//decode
 
-                ST7735_OutUDec(t.odd);
-                ST7735_OutUDec(t.even);
-                ST7735_OutString(d);
+           //     ST7735_OutUDec(t.odd);
+           //     ST7735_OutUDec(t.even);
+           //     ST7735_OutString(d);
+                temp = 4096-t.odd;
+                if(xvalue < 127){
+                				yvalue1 = 150-(temp/100);
+                				ST7735_FillRect(xvalue, 90, 1, 70, ST7735_Color565(0, 0, 0));
+                				ST7735_DrawPixel(xvalue, yvalue1, ST7735_Color565(255, 128, 128));
+                				xvalue++;
+                				temp = 4096-t.even;
+                				yvalue1 = 150-(temp/100);
+                				ST7735_FillRect(xvalue, 90, 1, 70, ST7735_Color565(0, 0, 0));
+                				ST7735_DrawPixel(xvalue, yvalue1, ST7735_Color565(255, 128, 128));
+                				xvalue++;
+
+                				}else{
+                				yvalue1 = 150-(temp/100);
+                				ST7735_FillRect(xvalue, 90, 1, 70, ST7735_Color565(0, 0, 0));
+                				ST7735_DrawPixel(xvalue, yvalue1, ST7735_Color565(255, 128, 128));
+                				xvalue++;
+                				temp = 4096-t.even;
+                				yvalue1 = 150-(temp/100);
+                				ST7735_FillRect(xvalue, 90, 1, 70, ST7735_Color565(0, 0, 0));
+                				ST7735_DrawPixel(xvalue, yvalue1, ST7735_Color565(255, 128, 128));
+                				xvalue++;
+                			}
                 UART_OutString(buf);
 				UART_NewLine();
 			}
