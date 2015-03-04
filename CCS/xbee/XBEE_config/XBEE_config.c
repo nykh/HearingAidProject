@@ -131,6 +131,14 @@ void static XBEE_enter_command_mode(void) {
 	XBEE_WaitForXBeeOK();
 }
 
+// deprecated
+static void XBEE_Reset(void) {
+	// XBee Initialization
+	XBEE_enter_command_mode();
+	XBEE_command("RE");
+	XBEE_command("WR");
+	XBEE_command("CN");
+}
 
 void XBEE_config(const char *myaddr, const char *destination) {
 	// XBee Initialization
