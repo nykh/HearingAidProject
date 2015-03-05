@@ -6,8 +6,6 @@ import time
 
 BAUD_RATE = 115200
 
-
-
 if __name__ == '__main__':
 	# automatically find Stellaris ICDI port
 	icdi = list(list_ports.grep('ACM0'))
