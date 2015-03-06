@@ -32,6 +32,6 @@ void DAC_Init(uint16_t data){
 // inputs:  voltage output (0 to 4095)
 // outputs: none
 void DAC_Out(uint16_t code) {
-  while((SSI2_SR_R&0x00000002)==0);  // SSI Transmit FIFO Not Full
-  SSI2_DR_R = code;                  // data out, no reply
+  while((SSI2_SR_R & SSI_SR_TNF)==0);  // SSI Transmit FIFO Not Full
+  SSI2_DR_R = code;                    // data out, no reply
 }

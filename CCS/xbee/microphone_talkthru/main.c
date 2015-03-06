@@ -80,6 +80,9 @@ int main(void){
 
 	while(1){
 		ADC_Get(&sample);
+
+		// perform algorithm on sample
+
 		DAC_Out(sample);
 	}
 }
