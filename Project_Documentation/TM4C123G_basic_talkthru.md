@@ -1,7 +1,9 @@
 # TM4C123G basic talkthru
 
-## Related documentation
+## Material
 [ADC Part of the TM4C123G Datasheet](http:/http://www.ti.com/lit/ds/symlink/tm4c123gh6pm.pdf/)
+
+[Adafruit MAX4466 Amp + Microphone module](http://www.adafruit.com/product/1063), [MAX4466 Datasheet](http://www.adafruit.com/datasheets/MAX4465-MAX4469.pdf)
 
 [TLV5616C 12bit DAC chip](http://www.ti.com/lit/ds/symlink/tlv5616.pdf)
 
@@ -25,4 +27,8 @@
 	- PB4, 5, 7 multiplex
 - ADC0 on PD3
 - Timer 0A
+
+## Instruction
+
+### Microphone dynamic range adjustment
 

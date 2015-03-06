@@ -72,7 +72,7 @@ int main(void){
 
 	Time_Init();
 	_____debug_Init();
-	ADC0_InitTimer0ATriggerSeq3PD3(16000);
+	ADC0_InitTimer0ATriggerSeq3PD3(3125);
 	DAC_Init(0);
 	_____debug_heartbeat(); // on
 
