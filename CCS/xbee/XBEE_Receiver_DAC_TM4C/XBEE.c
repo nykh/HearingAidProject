@@ -14,6 +14,9 @@ AddIndexFifo(XBEERx, RXFIFOSIZE, char, FIFOSUCCESS, FIFOFAIL)
 AddIndexFifo(XBEETx, TXFIFOSIZE, char, FIFOSUCCESS, FIFOFAIL)
 
 void EnableInterrupts(void);  // Enable interrupts
+#define SHORT_WAIT() \
+	do{ Time_Wait10ms(50); XBEE_WaitForResponse(); }  \
+	while(0)                                          \
 
 // copy from hardware RX FIFO to software RX FIFO
 // stop when hardware RX FIFO is empty or software RX FIFO is full
@@ -37,7 +40,7 @@ void static copySoftwareToHardware(void){
 
 // input ASCII character from UART
 // spin if RxFifo is empty
-unsigned char static XBEE_InChar(void){
+unsigned char XBEE_InChar(void){
   char letter;
   while(XBEERxFifo_Get(&letter) == FIFOFAIL){};
   return(letter);
@@ -45,7 +48,7 @@ unsigned char static XBEE_InChar(void){
 
 // output ASCII character to UART
 // spin if TxFifo is full
-void XBEE_OutChar(unsigned char data){
+void static XBEE_OutChar(unsigned char data){
   while(XBEETxFifo_Put(data) == FIFOFAIL){};
   UART1_IM_R &= ~UART_IM_TXIM;          // disable TX FIFO interrupt
   copySoftwareToHardware();
@@ -97,14 +100,39 @@ void XBEE_InString(char *buf) {
 	*buf = '\0';
 }
 
+
+void static XBEE_WaitForXBeeOK(void) {
+	char letter;
+	while(XBEERxFifo_Get(&letter) == FIFOFAIL && letter != 'O');
+	while(XBEERxFifo_Get(&letter) == FIFOFAIL && letter != 'K');
+	while(XBEERxFifo_Get(&letter) == FIFOFAIL && letter != CR);
+}
+
+void static XBEE_command(const char *cmd) {
+	XBEE_OutChar('A');
+	XBEE_OutChar('T');
+	XBEE_OutString(cmd);
+	Time_Wait10ms(50);
+	XBEE_WaitForXBeeOK();
+}
+
+void static XBEE_enter_command_mode(void) {
+	// X, wait 1.1s, +++, wait 1.1s, WFR
+	XBEE_OutChar('X');
+	Time_Wait10ms(150);
+	XBEE_OutChar('+'); XBEE_OutChar('+'); XBEE_OutChar('+');
+	Time_Wait10ms(150);
+	XBEE_WaitForXBeeOK();
+}
+
 void XBEE_Init(void){
 	SYSCTL_RCGCUART_R |= SYSCTL_RCGCUART_R1; // activate UART1
 	SYSCTL_RCGCGPIO_R |= SYSCTL_RCGCGPIO_R1; // activate port B
 	XBEERxFifo_Init();                        // initialize empty FIFOs
 	XBEETxFifo_Init();
 	UART1_CTL_R &= ~UART_CTL_UARTEN;      // disable UART
-	UART1_IBRD_R = 43;                   // IBRD = int(50,000,000 / (16 * 115,200)) = int(27.1267)
-	UART1_FBRD_R = 26;                    // FBRD = int(0.1267 * 64 + 0.5) = 8
+	UART1_IBRD_R = 27;                   // IBRD = int(50,000,000 / (16 * 115,200)) = int(27.1267)
+	UART1_FBRD_R =8;                    // FBRD = int(0.1267 * 64 + 0.5) = 8
 										// 8 bit word length (no parity bits, one stop bit, FIFOs)
 	UART1_LCRH_R = (UART_LCRH_WLEN_8|UART_LCRH_FEN);
 	UART1_IFLS_R &= ~0x3F;                // clear TX and RX interrupt FIFO level fields
@@ -123,4 +151,22 @@ void XBEE_Init(void){
 
 	NVIC_PRI1_R = (NVIC_PRI1_R&0xFF00FFFF)|0x00400000; // bits 23-21
 	NVIC_EN0_R |= (1<<6);          // enable interrupt 6 in NVIC
+}
+
+void XBEE_configure(unsigned char destination, unsigned char myaddr) {
+    char destination_low[5] = "DL00";
+    char my_address[5]      = "MY00";
+
+    // FIXME: bug when nibble is 0xA-0xF
+	destination_low[2] += destination >> 4;
+	destination_low[3] += (destination & 0xF);
+	my_address[2] += myaddr >> 4;
+	my_address[3] += (myaddr & 0xF);
+
+	XBEE_enter_command_mode();
+	XBEE_command(destination_low); // DLxx
+	XBEE_command("DH0");
+	XBEE_command(my_address);      // MYxx
+	XBEE_command("AP0");
+	XBEE_command("CN");
 }

@@ -23,7 +23,7 @@ void WaitForInterrupt(void);  // low power mode
 
 #define NICK_STYLE   3
 #define WEICE_STYLE  4
-#define FRAME_STYLE  NICK_STYLE
+#define FRAME_STYLE  WEICE_STYLE
 
 #if FRAME_STYLE == NICK_STYLE
 
@@ -145,19 +145,16 @@ int main(void){
 	while(1){
 #if FRAME_STYLE == NICK_STYLE
 		frame f;
-#else
-		char frame[4];
-#endif
-
 		ADC_Get(&first_Sample);
 		ADC_Get(&second_Sample);
 
-#if FRAME_STYLE == NICK_STYLE
 		f = encode_frame(&first_Sample, &second_Sample);
 		XBEE_OutString(f.array);
 #else
-		encode_frame(first_Sample, second_Sample, frame);
-		XBEE_OutString(frame);
+		uint16_t sample;
+
+		ADC_Get(&sample);
+		XBEE_OutChar((sample >> 4) & 0xFF);
 #endif
 
 

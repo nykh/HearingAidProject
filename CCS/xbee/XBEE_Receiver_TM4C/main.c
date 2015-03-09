@@ -160,10 +160,8 @@ int main(void){
                 strncpy(f.array,buf,3);//copy from buf to frame array
 				t=decode_frame(f);//decode
 
-           //     ST7735_OutUDec(t.odd);
-           //     ST7735_OutUDec(t.even);
-           //     ST7735_OutString(d);
-                temp = 4096-t.odd;
+#if screen
+				temp = 4096-t.odd;
                 if(xvalue < 127){
                 				yvalue1 = 150-(temp/100);
                 				ST7735_FillRect(xvalue, 90, 1, 70, ST7735_Color565(0, 0, 0));
@@ -186,6 +184,8 @@ int main(void){
                 				ST7735_DrawPixel(xvalue, yvalue1, ST7735_Color565(255, 128, 128));
                 				xvalue++;
                 			}
+#endif
+
                 UART_OutString(buf);
 			}
 #else
