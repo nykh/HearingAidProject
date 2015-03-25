@@ -51,7 +51,7 @@ Go to the `Variable` tab and add the following variable
 ##### Build -> ARM Compiler -> Include Option
 Add entry `"${TIVA_ROOT}"`, which will expand to the Tivaware root folder. This will allow you to write:
 
-```c
+```cpp
 #include "inc/some_header.h"
 #include "driverlib/driver.h"
 ```
