@@ -8,6 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////
 
+#include <stdint.h>
 #include "DSP_Config.h" 
   
 // Data is received as 2 16-bit words (left/right) packed into one
