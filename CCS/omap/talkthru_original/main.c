@@ -8,8 +8,7 @@
 //
 ///////////////////////////////////////////////////////////////////////
 
-#include "DSP_Config.h"
-#include "LCDK_Support_DSP.h"
+#include "DSP_Config.h"   
 
 int main()
 {    

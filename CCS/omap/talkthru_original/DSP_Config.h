@@ -25,9 +25,9 @@
 //#define SampleRateSetting 		AIC3106Fs8kHz		//  8kHz sample rate
 
 // uncomment just the line for the codec input in use
-#define CodecType 			LCDK_LineInput		// LCDK using line input
+//#define CodecType 			LCDK_LineInput		// LCDK using line input
 //#define CodecType 				LCDK_MicInput_0db	// LCDK using microphone input, no preamp
-//#define CodecType 			LCDK_MicInput_20db	// LCDK using microphone input, +20db gain
+#define CodecType 			LCDK_MicInput_20db	// LCDK using microphone input, +20db gain
 
 
 #endif

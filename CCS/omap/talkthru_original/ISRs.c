@@ -8,7 +8,6 @@
 //
 ///////////////////////////////////////////////////////////////////////
 
-#include <stdint.h>
 #include "DSP_Config.h" 
   
 // Data is received as 2 16-bit words (left/right) packed into one
@@ -45,8 +44,11 @@ interrupt void Codec_ISR()
 	float xLeft, xRight, yLeft, yRight;
 
 
- 	if(CheckForOverrun())					// overrun error occurred (i.e. halted DSP)
-		return;								// so serial port is reset to recover
+ 	if(CheckForOverrun()) {
+ 		// overrun error occurred (i.e. halted DSP)
+ 		return;								// so serial port is reset to recover
+ 	}
+
 
   	CodecDataIn.UINT = ReadCodecData();		// get input data samples
 	
