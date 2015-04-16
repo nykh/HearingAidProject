@@ -21,7 +21,7 @@ The chip is in a package of pluggable 8 pins:
 | 5. SCK                  |  SSI0CLK (PA2) |  Yellow |
 | 6. MOSI (MCU to nFR24)  |  SSI0Tx  (PA5) |  Green  |
 | 7. MISO (nFR24 to MCU)  |  SSI0Rx  (PA4) |  Orange |
-| 8. IRQ                  |  unconnected   |         |
+| 8. IRQ                  |  PA7           |  Brown  |
 
 ## Using resources on TM4C
 - SSI0
