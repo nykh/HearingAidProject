@@ -1,0 +1,44 @@
+function [minimums, fulllength] = Frequency_Finder()
+
+
+%100 122 149 182 222 271
+%9764 11916 14542 17747 21659 24000
+
+bounds = [100 122 149 182 222 271 330 403 492 601 733 894 1092 1332 1626 1984 2421 2955 3607 4401 5372 6556 8000];
+k = 1;
+Fs = 48000; 
+minimums = ones(3,22); 
+Factors = zeros(7, 22);
+savethisshit = zeros(1, 7);
+for m = 1:1:22
+    minL = Fs;
+    minF = 0;
+for n = bounds(m):1:bounds(m+1)
+   L = 48000;
+   N = n;
+    while k 
+        G = gcd(N, L);
+        N = N/G;
+        L = L/G;
+        if G == 1
+            k = 0;
+        end
+    end
+    k=1;
+    if L < minL
+        minL = L;
+        minF = n;
+        Numcycles = N;
+    end
+end
+minimums(1, m) = minL;
+minimums(2, m) = minF;
+minimums(3, m) = Numcycles;
+length = max(minimums(1, :));
+fuckthis = numel(factor(minL));
+savethisshit = [factor(minL) zeros(1, 7-fuckthis)];
+Factors(:, m) = savethisshit;
+end
+
+fulllength = lcm(minimums(1, 1),lcm(minimums(1, 2),lcm(minimums(1, 3),lcm(minimums(1, 4),lcm(minimums(1, 5),lcm(minimums(1, 6),lcm(minimums(1, 7),lcm(minimums(1, 8), lcm(minimums(1, 9),lcm(minimums(1, 10),lcm(minimums(1, 11),lcm(minimums(1, 12),lcm(minimums(1, 13),lcm(minimums(1, 14), lcm(minimums(1, 15),lcm(minimums(1, 16),lcm(minimums(1, 17),lcm(minimums(1, 18),lcm(minimums(1, 19),lcm(minimums(1, 20),lcm(minimums(1, 21),minimums(1, 22))))))))))))))))))))));
+end
