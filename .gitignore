@@ -13,6 +13,7 @@
 *.map
 *.xml
 *.opt
+*.log
 .ccsproject
 
 #################

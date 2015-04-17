@@ -6,7 +6,6 @@
 #include <stdbool.h>
 #include "inc/hw_types.h"
 #include "driverlib/sysctl.h"
-#include "Time.h"
 #include "XBEE.h"
 #include "debug.h"
 
@@ -122,12 +121,13 @@ int main(void){
 	uint8_t yvalue1 = 0;
 #endif
 
+#if FRAME_STYLE == NICK_STYLE
 	uint16_t first_Sample, second_Sample;
+#endif
 
 	// 50 MHz
 	SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL
 			     | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
-	Time_Init();
 	_____debug_Init();
 	XBEE_Init();
 

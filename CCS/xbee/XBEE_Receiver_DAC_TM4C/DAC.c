@@ -2,14 +2,19 @@
 #include <stdbool.h>
 #include "inc/tm4c123gh6pm.h"
 #include "driverlib/gpio.h"
+#include "driverlib/sysctl.h"
+#include "driverlib/pin_map.h"
+#include "driverlib/ssi.h"
 #include "FIFO.h"
 #include "Timer0A.h"
 #include "debug.h"
+
 
 void periodic_task(void);
 
 AddIndexFifo(DAC, 64, uint16_t, 1, 0)
 
+#define SSI2_BASE    SSI2_CR0_R   // use the fact that CR0 has offset 0x00
 #define PB457   (GPIO_PIN_4 | GPIO_PIN_5 | GPIO_PIN_7)
 
 void DAC_Init(uint32_t sampling_rate){
@@ -24,7 +29,13 @@ void DAC_Init(uint32_t sampling_rate){
 		  & ~(GPIO_PCTL_PB4_M | GPIO_PCTL_PB5_M | GPIO_PCTL_PB7_M))
 		  | GPIO_PCTL_PB4_SSI2CLK | GPIO_PCTL_PB5_SSI2FSS | GPIO_PCTL_PB7_SSI2TX;
   GPIO_PORTB_AMSEL_R &= ~PB457;      // disable analog functionality on PB4,5,7
-		
+
+//  SSIConfigSetExpClk(SSI2_BASE, SysCtlClockGet(), SSI_FRF_MOTO_MODE_0,
+//		  SSI_MODE_MASTER, 2000000, 16);
+//
+//  SSIEnable(SSI2_BASE);
+
+
   SSI2_CR1_R = 0;                  // disable SSI, master mode
   SSI2_CPSR_R = 0x02;              // 40 MHz SSIClk
   // SCR = 0, SPH = 0, SPO = 1, Freescale, DSS = 16-bit data
@@ -40,16 +51,17 @@ void DAC_Init(uint32_t sampling_rate){
 // Send data to Max5353 12-bit DAC
 // inputs:  voltage output (0 to 4095)
 // outputs: none
+void DAC_Out(uint16_t sample) {
+	while((SSI2_SR_R & SSI_SR_TNF)==0);  // SSI Transmit FIFO Not Full
+	SSI2_DR_R = sample;                  // data out, no reply
+}
+
+#if synchronous
 void DAC_Put(uint16_t sample) {
 	if(DACFifo_Put(sample) == 0) {
 		_____debug_heartbeat();
 		while(DACFifo_Put(sample) == 0);
 	}
-}
-
-void DAC_Out(uint16_t sample) {
-	while((SSI2_SR_R & SSI_SR_TNF)==0);  // SSI Transmit FIFO Not Full
-	SSI2_DR_R = sample;                  // data out, no reply
 }
 
 void periodic_task(void) {
@@ -61,3 +73,4 @@ void periodic_task(void) {
 	while((SSI2_SR_R & SSI_SR_TNF)==0);  // SSI Transmit FIFO Not Full
 	SSI2_DR_R = sample;                  // data out, no reply
 }
+#endif

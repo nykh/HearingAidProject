@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include "inc/tm4c123gh6pm.h"
 #include "FIFO.h"
-#include "Time.h"
 
 #define TXFIFOSIZE  16
 #define RXFIFOSIZE  8
