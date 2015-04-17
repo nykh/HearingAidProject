@@ -13,6 +13,7 @@
 *.map
 *.xml
 *.opt
+*.log
 .ccsproject
 
 #################
@@ -71,7 +72,4 @@ targetConfigs/
 ##########################
 
 examples/
-blinky/
-qs-rgb/
-uart_echo/
 

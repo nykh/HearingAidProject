@@ -16,4 +16,3 @@
 - UART0 interfaces with PC serial port
 - UART1 interfaces XBee
 - Timer
-- 

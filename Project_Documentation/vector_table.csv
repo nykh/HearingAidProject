@@ -1,0 +1,157 @@
+/* Exception Handlers */,,
+Reset_Handler,1,The reset handler
+NMI_Handler,2,The NMI handler
+HardFault_Handler,3,The hard fault handler
+MpuFault_Handler,4,The MPU fault handler
+BusFault_Handler,5,The bus fault handler
+UsageFault_Handler,6,The usage fault handler
+0,7,Reserved
+0,8,Reserved 
+0,9,Reserved
+0,10,Reserved
+SVC_Handler,11,SVCall handler
+DebugMon_Handler,12,Debug monitor handler
+0,13,Reserved
+PendSV_Handler,14,The PendSV handler
+SysTick_Handler,15,The SysTick handler
+,,
+/* Interrupt Handlers */,,
+GPIOPortA_Handler,16,GPIO Port A
+GPIOPortB_Handler,17,GPIO Port B
+GPIOPortC_Handler,18,GPIO Port C
+GPIOPortD_Handler,19,GPIO Port D
+GPIOPortE_Handler,20,GPIO Port E
+UART0_Handler,21,UART0 Rx and Tx
+UART1_Handler,22,UART1 Rx and Tx
+SSI0_Handler,23,SSI0 Rx and Tx
+I2C0_Handler,24,I2C0 Master and Slave
+PWM0Fault_Handler,25,PWM Fault
+PWM0Gen0_Handler,26,PWM Generator 0
+PWM0Gen1_Handler,27,PWM Generator 1
+PWM0Gen2_Handler,28,PWM Generator 2
+Quadrature0_Handler,29,Quadrature Encoder 0
+ADC0Seq0_Handler,30,ADC Sequence 0
+ADC0Seq1_Handler,31,ADC Sequence 1
+ADC0Seq2_Handler,32,ADC Sequence 2
+ADC0Seq3_Handler,33,ADC Sequence 3
+WDT_Handler,34,Watchdog timer
+Timer0A_Handler,35,Timer 0 subtimer A
+Timer0B_Handler,36,Timer 0 subtimer B
+Timer1A_Handler,37,Timer 1 subtimer A
+Timer1B_Handler,38,Timer 1 subtimer B
+Timer2A_Handler,39,Timer 2 subtimer A
+Timer2B_Handler,40,Timer 2 subtimer B
+Comp0_Handler,41,Analog Comparator 0
+Comp1_Handler,42,Analog Comparator 1
+0,43,Reserved
+SysCtl_Handler,44,System Control (PLL & OSC & BO)
+FlashCtl_Handler,45,FLASH Control
+GPIOPortF_Handler,46,GPIO Port F
+0,47,Reserved
+0,48,Reserved
+UART2_Handler,49,UART2 Rx and Tx
+SSI1_Handler,50,SSI1 Rx and Tx
+Timer3A_Handler,51,Timer 3 subtimer A
+Timer3B_Handler,52,Timer 3 subtimer B
+I2C1_Handler,53,I2C1 Master and Slave
+Quadrature1_Handler,54,Quadrature Encoder 1
+CAN0_Handler,55,CAN0
+CAN1_Handler,56,CAN1
+0,57,Reserved
+0,58,Reserved
+Hibernate_Handler,59,Hibernate
+USB0_Handler,60,USB0
+PWM3_Handler,61,PWM Generator 3
+uDMA_Handler,62,uDMA Software Transfer
+uDMA_Error,63,uDMA Error
+ADC1Seq0_Handler,64,ADC1 Sequence 0
+ADC1Seq1_Handler,65,ADC1 Sequence 1
+ADC1Seq2_Handler,66,ADC1 Sequence 2
+ADC1Seq3_Handler,67,ADC1 Sequence 3
+0,68,Reserved
+0,69,Reserved
+0,70,Reserved
+0,71,Reserved
+0,72,Reserved
+SSI2_Handler,73,SSI2 Rx and Tx
+SSI3_Handler,74,SSI3 Rx and Tx
+UART3_Handler,75,UART3 Rx and Tx
+UART4_Handler,76,UART4 Rx and Tx
+UART5_Handler,77,UART5 Rx and Tx
+UART6_Handler,78,UART6 Rx and Tx
+UART7_Handler,79,UART7 Rx and Tx
+0,80,Reserved
+0,81,Reserved
+0,82,Reserved
+0,83,Reserved
+I2C2_Handler,84,I2C2 Master and Slave
+I2C3_Handler,85,I2C3 Master and Slave
+Timer4A_Handler,86,Timer 4 subtimer A
+Timer4B_Handler,87,Timer 4 subtimer B
+0,88,Reserved
+0,89,Reserved
+0,90,Reserved
+0,91,Reserved
+0,92,Reserved
+0,93,Reserved
+0,94,Reserved
+0,95,Reserved
+0,96,Reserved
+0,97,Reserved
+0,98,Reserved
+0,99,Reserved
+0,100,Reserved
+0,101,Reserved
+0,102,Reserved
+0,103,Reserved
+0,104,Reserved
+0,105,Reserved
+0,106,Reserved
+0,107,Reserved
+Timer5A_Handler,108,Timer 5 subtimer A
+Timer5B_Handler,109,Timer 5 subtimer B
+WideTimer0A_Handler,110,Wide Timer 0 subtimer A
+WideTimer0B_Handler,111,Wide Timer 0 subtimer B
+WideTimer1A_Handler,112,Wide Timer 1 subtimer A
+WideTimer1B_Handler,113,Wide Timer 1 subtimer B
+WideTimer2A_Handler,114,Wide Timer 2 subtimer A
+WideTimer2B_Handler,115,Wide Timer 2 subtimer B
+WideTimer3A_Handler,116,Wide Timer 3 subtimer A
+WideTimer3B_Handler,117,Wide Timer 3 subtimer B
+WideTimer4A_Handler,118,Wide Timer 4 subtimer A
+WideTimer4B_Handler,119,Wide Timer 4 subtimer B
+WideTimer5A_Handler,120,Wide Timer 5 subtimer A
+WideTimer5B_Handler,121,Wide Timer 5 subtimer B
+FPUException_Handler,122,FPU
+0,123,Reserved
+0,124,Reserved
+0,125,Reserved
+0,126,Reserved
+0,127,Reserved
+0,128,Reserved
+0,129,Reserved
+0,130,Reserved
+0,131,Reserved
+0,132,Reserved
+0,133,Reserved
+0,134,Reserved
+0,135,Reserved
+0,136,Reserved
+0,137,Reserved
+0,138,Reserved
+0,139,Reserved
+0,140,Reserved
+0,141,Reserved
+0,142,Reserved
+0,143,Reserved
+0,144,Reserved
+0,145,Reserved
+0,146,Reserved
+0,147,Reserved
+0,148,Reserved
+0,149,Reserved
+PWM1Gen0_Handler,150,PWM 1 Generator 0
+PWM1Gen1_Handler,151,PWM 1 Generator 1
+PWM1Gen2_Handler,152,PWM 1 Generator 2
+PWM1Gen3_Handler,153,PWM 1 Generator 3
+PWM1Fault_Handler,154,PWM 1 Fault
