@@ -9,6 +9,7 @@
 #include "Timer0A.h"
 #include "debug.h"
 
+#define synchronous
 
 void periodic_task(void);
 
@@ -44,7 +45,7 @@ void DAC_Init(uint32_t sampling_rate){
   SSI2_DR_R = 0;
   SSI2_CR1_R |= SSI_CR1_SSE;       // enable SSI2
 
-  // Timer0A_Init(periodic_task, sampling_rate); // period here shoulld match the sampling rate
+  Timer0A_Init(periodic_task, sampling_rate); // period here shoulld match the sampling rate
 }
 
 //********DAC_Out*****************
@@ -56,10 +57,10 @@ void DAC_Out(uint16_t sample) {
 	SSI2_DR_R = sample;                  // data out, no reply
 }
 
-#if synchronous
+#if defined(synchronous)
 void DAC_Put(uint16_t sample) {
 	if(DACFifo_Put(sample) == 0) {
-		_____debug_heartbeat();
+		// _____debug_heartbeat();
 		while(DACFifo_Put(sample) == 0);
 	}
 }

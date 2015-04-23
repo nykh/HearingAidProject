@@ -26,12 +26,12 @@ int main(void){
 	Time_Init();
 	_____debug_Init();
 	XBEE_Init();
-    DAC_Init(14000);
+    DAC_Init(6250);
 
     EnableInterrupts();
 
 	for(;;){
 		uint16_t sample = XBEE_InChar();
-		DAC_Out(sample);
+		DAC_Put(sample);
 	}
 }

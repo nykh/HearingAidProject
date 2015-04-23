@@ -126,7 +126,7 @@ int main(void){
 #endif
 
 	// 50 MHz
-	SysCtlClockSet(SYSCTL_SYSDIV_2_5 | SYSCTL_USE_PLL
+	SysCtlClockSet(SYSCTL_SYSDIV_4 | SYSCTL_USE_PLL
 			     | SYSCTL_OSC_MAIN | SYSCTL_XTAL_16MHZ);
 	_____debug_Init();
 	XBEE_Init();
@@ -135,7 +135,7 @@ int main(void){
 	ST7735_InitR(INITR_REDTAB);	//initialize the screen
 #endif
 
-	ADC0_InitTimer0ATriggerSeq3PD3(14000);  //*****ADC channel 4, 1 kHz sampling
+	ADC0_InitTimer0ATriggerSeq3PD3(6250);  //*****ADC channel 4, 5715 Hz
 	_____debug_heartbeat(); // on
 
 	EnableInterrupts();
