@@ -259,7 +259,7 @@ void ProcessBuffer()
 		Input4[j] = filteroutput5;
 		Input5[j] = filteroutput6;
 		Input6[j] = filteroutput7;
-		Input7[j] = 0;//filteroutput8;
+		Input7[j] = filteroutput8;
 		Input8[j] = filteroutput9;
 		Input9[j] = filteroutput10;
 		Input10[j] = filteroutput11;

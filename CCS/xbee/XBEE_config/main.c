@@ -11,6 +11,9 @@
 #include "XBEE_config.h"
 #include "debug.h"
 
+#define RX 0
+#define TX 1
+#define MODE  TX
 
 void EnableInterrupts(void);  // Enable interrupts
 
@@ -24,7 +27,11 @@ int main(void) { volatile unsigned long dummy;
 	XBEE_Init();
 	_____debug_heartbeat(); // off
 	EnableInterrupts();
+#if MODE
 	XBEE_config("69", "79");
+#else
+	XBEE_config("79", "69");
+#endif
 	_____debug_heartbeat(); // on
 
 
